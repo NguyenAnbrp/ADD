@@ -18,7 +18,7 @@
             android:layout_height="40dp"
             android:background="@drawable/bg_avatar_circle"
             android:gravity="center"
-            android:text="Ă"
+            android:text="F"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -34,7 +34,7 @@
                 android:id="@+id/budgetName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ăn uống"
+                android:text="Food"
                 android:textColor="@color/navy_900"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Đã chi"
+                android:text="Spent"
                 android:textColor="@color/gray_500"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -57,7 +57,7 @@
             android:paddingTop="6dp"
             android:paddingRight="10dp"
             android:paddingBottom="6dp"
-            android:text="+ Đặt hạn mức"
+            android:text="+ Set limit"
             android:textColor="@color/navy_900"
             android:textSize="12sp"
             android:textStyle="bold" />
@@ -68,7 +68,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="450.000 đ"
+        android:text="0 VND"
         android:textColor="@color/navy_900"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -88,7 +88,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:text="Chưa đặt hạn mức"
+        android:text="No limit set"
         android:textColor="@color/gray_500"
         android:textSize="12sp" />
 </LinearLayout>

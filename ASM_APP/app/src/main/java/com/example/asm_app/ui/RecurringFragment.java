@@ -24,6 +24,7 @@ import com.example.asm_app.repositories.ExpenseRepository;
 import com.example.asm_app.util.FormatUtils;
 import com.example.asm_app.util.SessionManager;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -82,7 +83,7 @@ public class RecurringFragment extends Fragment {
         categories.clear();
         categories.addAll(repository.getCategories());
         List<String> labels = new ArrayList<>();
-        labels.add("Không phân loại");
+        labels.add("Uncategorized");
         for (Category category : categories) {
             labels.add(category.getName());
         }
@@ -95,21 +96,21 @@ public class RecurringFragment extends Fragment {
         String title = titleInput.getText().toString().trim();
         String amountText = amountInput.getText().toString().trim();
         if (title.isEmpty() || amountText.isEmpty()) {
-            Toast.makeText(requireContext(), "Nhập đầy đủ mô tả và số tiền", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Enter description and amount", Toast.LENGTH_SHORT).show();
             return;
         }
         double amount;
         try {
             amount = Double.parseDouble(amountText);
         } catch (NumberFormatException e) {
-            Toast.makeText(requireContext(), "Số tiền không hợp lệ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Invalid amount", Toast.LENGTH_SHORT).show();
             return;
         }
         Calendar chosen = Calendar.getInstance();
         chosen.setTime(parseDate(dateInput.getText().toString()));
         long categoryId = selectedCategoryId();
         repository.addRecurring(title, amount, categoryId, chosen.getTime());
-        Toast.makeText(requireContext(), "Đã lưu khoản định kỳ", Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), "Recurring expense saved", Toast.LENGTH_SHORT).show();
         titleInput.setText("");
         amountInput.setText("");
         renderRecurringList();
@@ -133,7 +134,7 @@ public class RecurringFragment extends Fragment {
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         if (items.isEmpty()) {
             TextView empty = new TextView(requireContext());
-            empty.setText("Chưa có khoản định kỳ.");
+            empty.setText("No recurring expenses yet.");
             empty.setTextColor(getResources().getColor(R.color.gray_700));
             empty.setPadding(16, 16, 16, 16);
             recurringList.addView(empty);
@@ -149,7 +150,7 @@ public class RecurringFragment extends Fragment {
             title.setText(item.getTitle());
             category.setText(item.getCategory());
             amount.setText(FormatUtils.formatCurrency(item.getAmount()));
-            date.setText("Bắt đầu " + FormatUtils.formatDate(item.getStartDate()));
+            date.setText("Starts " + FormatUtils.formatDate(item.getStartDate()));
             recurringList.addView(row);
         }
     }
@@ -164,7 +165,7 @@ public class RecurringFragment extends Fragment {
 
     private java.util.Date parseDate(String value) {
         try {
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             return sdf.parse(value);
         } catch (Exception e) {
             return new java.util.Date();

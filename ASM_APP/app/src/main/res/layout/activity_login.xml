@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="12dp"
-                android:text="Welcome Back!"
+                android:text="Welcome back!"
                 android:textColor="@color/navy_900"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="4dp"
-                android:text="Quản lý tài chính cá nhân thông minh"
+                android:text="Smart personal finance tracking"
                 android:textColor="@color/gray_700"
                 android:textSize="13sp" />
 
@@ -72,7 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Mật khẩu"
+                android:text="Password"
                 android:textColor="@color/gray_700"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -83,7 +83,7 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/bg_input"
-                android:hint="••••••••"
+                android:hint="••••••"
                 android:inputType="textPassword"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_button_primary"
-                android:text="Đăng nhập"
+                android:text="Log in"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="15sp" />
@@ -107,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="12dp"
-                android:text="Chưa có tài khoản? Đăng ký ngay"
+                android:text="Don't have an account? Sign up"
                 android:textColor="@color/navy_900"
                 android:textSize="13sp"
                 android:textStyle="bold" />

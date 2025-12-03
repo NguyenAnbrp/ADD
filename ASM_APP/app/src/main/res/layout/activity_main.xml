@@ -21,10 +21,12 @@
         android:paddingTop="8dp"
         android:paddingBottom="10dp"
         android:background="@color/white"
+        android:elevation="8dp"
         app:labelVisibilityMode="labeled"
         app:itemIconTint="@color/bottom_nav_selector"
         app:itemTextColor="@color/bottom_nav_selector"
         app:itemBackground="@drawable/bottom_nav_item_bg"
         app:itemIconSize="24dp"
+        app:itemHorizontalTranslationEnabled="false"
         app:menu="@menu/menu_bottom_nav" />
 </LinearLayout>

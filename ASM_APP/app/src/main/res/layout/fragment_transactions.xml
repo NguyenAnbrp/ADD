@@ -27,7 +27,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Sổ Giao Dịch"
+                    android:text="Transactions"
                     android:textColor="@color/navy_900"
                     android:textSize="22sp"
                     android:textStyle="bold" />
@@ -40,7 +40,7 @@
                 android:layout_height="48dp"
                 android:background="@drawable/bg_input"
                 android:drawablePadding="10dp"
-                android:hint="Tìm kiếm giao dịch..."
+                android:hint="Search transactions..."
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:textColor="@color/navy_900"

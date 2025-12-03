@@ -26,7 +26,7 @@
         android:id="@+id/legendValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0 đ"
+        android:text="0 VND"
         android:textColor="@color/gray_700"
         android:textSize="13sp" />
 

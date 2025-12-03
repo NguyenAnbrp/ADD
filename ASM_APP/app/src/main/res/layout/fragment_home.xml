@@ -24,7 +24,7 @@
                 android:id="@+id/homeTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tổng quan"
+                android:text="Overview"
                 android:textColor="@color/navy_900"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -40,7 +40,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Số dư còn lại"
+                android:text="Remaining balance"
                 android:textColor="@color/gray_300"
                 android:textSize="14sp" />
 
@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="6dp"
-                android:text="-707.000 đ"
+                android:text="0 VND"
                 android:textColor="@color/white"
                 android:textSize="26sp"
                 android:textStyle="bold" />
@@ -86,7 +86,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
-                            android:text="Hạn mức"
+                            android:text="Limit"
                             android:textColor="@color/gray_700"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -97,7 +97,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="0 đ"
+                        android:text="0 VND"
                         android:textColor="@color/navy_900"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -127,7 +127,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
-                            android:text="Chi tiêu"
+                            android:text="Spent"
                             android:textColor="@color/gray_700"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -138,7 +138,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="707.000 đ"
+                        android:text="0 VND"
                         android:textColor="@color/navy_900"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -177,7 +177,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Tiêu dùng tháng này"
+                        android:text="This month's spending"
                         android:textColor="@color/navy_900"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -192,7 +192,7 @@
                     android:paddingTop="6dp"
                     android:paddingRight="10dp"
                     android:paddingBottom="6dp"
-                    android:text="Tháng 12 Năm 2025"
+                    android:text="Month / Year"
                     android:textColor="@color/gray_700"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -202,7 +202,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="0% ngân sách đã dùng"
+                android:text="0% of budget used"
                 android:textColor="@color/navy_900"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -221,7 +221,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Dựa trên các danh mục đã thiết lập hạn mức"
+                android:text="Based on categories with limits set"
                 android:textColor="@color/gray_500"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -237,7 +237,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Top chi tiêu"
+                android:text="Top spending"
                 android:textColor="@color/navy_900"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -267,7 +267,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Giao dịch gần đây"
+                    android:text="Recent transactions"
                     android:textColor="@color/navy_900"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -275,7 +275,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Xem tất cả"
+                    android:text="View all"
                     android:textColor="@color/blue_600"
                     android:textSize="13sp"
                     android:textStyle="bold" />

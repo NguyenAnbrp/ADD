@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="12dp"
-                android:text="Tạo tài khoản"
+                android:text="Create account"
                 android:textColor="@color/navy_900"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="4dp"
-                android:text="Bắt đầu hành trình tiết kiệm của bạn"
+                android:text="Start your saving journey"
                 android:textColor="@color/gray_700"
                 android:textSize="13sp" />
 
@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Họ tên"
+                android:text="Full name"
                 android:textColor="@color/gray_700"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -61,7 +61,7 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/bg_input"
-                android:hint="Nguyễn Văn A"
+                android:hint="John Doe"
                 android:inputType="textPersonName"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
@@ -94,7 +94,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Mật khẩu"
+                android:text="Password"
                 android:textColor="@color/gray_700"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -105,7 +105,7 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/bg_input"
-                android:hint="••••••••"
+                android:hint="••••••"
                 android:inputType="textPassword"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
@@ -118,7 +118,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_button_primary"
-                android:text="Đăng ký"
+                android:text="Sign up"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="15sp" />
@@ -129,7 +129,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="12dp"
-                android:text="Đã có tài khoản? Đăng nhập"
+                android:text="Already have an account? Log in"
                 android:textColor="@color/navy_900"
                 android:textSize="13sp"
                 android:textStyle="bold" />

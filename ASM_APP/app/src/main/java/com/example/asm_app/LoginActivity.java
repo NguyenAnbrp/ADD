@@ -50,12 +50,12 @@ public class LoginActivity extends AppCompatActivity {
         String email = emailInput.getText().toString().trim();
         String password = passwordInput.getText().toString();
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập email và mật khẩu", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show();
             return;
         }
         User user = userRepository.login(email, password);
         if (user == null) {
-            Toast.makeText(this, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Incorrect email or password", Toast.LENGTH_SHORT).show();
             return;
         }
         sessionManager.saveUser(user.getId(), user.getName(), user.getEmail());

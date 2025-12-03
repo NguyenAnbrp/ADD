@@ -54,16 +54,16 @@ public class RegisterActivity extends AppCompatActivity {
         String email = emailInput.getText().toString().trim();
         String password = passwordInput.getText().toString();
         if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
         if (userRepository.emailExists(email)) {
-            Toast.makeText(this, "Email đã tồn tại", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Email already exists", Toast.LENGTH_SHORT).show();
             return;
         }
         User user = userRepository.register(name, email, password);
         if (user == null) {
-            Toast.makeText(this, "Không thể tạo tài khoản, thử lại sau", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Could not create account. Please try again later.", Toast.LENGTH_SHORT).show();
             return;
         }
         sessionManager.saveUser(user.getId(), user.getName(), user.getEmail());
