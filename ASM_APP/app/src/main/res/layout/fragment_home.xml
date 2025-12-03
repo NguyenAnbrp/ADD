@@ -31,16 +31,16 @@
                 android:textStyle="bold" />
 
             <ImageView
-                android:id="@+id/logoutButton"
+                android:id="@+id/menuButton"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:padding="8dp"
-                android:src="@drawable/logout_icon"
+                android:src="@drawable/menu_icon"
                 android:clickable="true"
                 android:focusable="true"
-                android:contentDescription="Đăng xuất"
+                android:contentDescription="Menu tài khoản"
                 android:foreground="?android:attr/selectableItemBackgroundBorderless"
-                app:tint="@color/white" />
+                app:tint="@color/gray_700" />
         </LinearLayout>
 
         <LinearLayout
