@@ -64,6 +64,7 @@ public class BudgetFragment extends Fragment {
         sessionManager = new SessionManager(requireContext());
         repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
         budgetList = view.findViewById(R.id.budgetList);
+        repository.ensureDefaultCategoriesIfEmpty();
         setup(view);
         return view;
     }
@@ -71,6 +72,7 @@ public class BudgetFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        repository.ensureDefaultCategoriesIfEmpty();
         renderBudgets();
     }
 

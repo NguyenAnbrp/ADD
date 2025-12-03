@@ -39,6 +39,7 @@ public class HomeFragment extends Fragment {
         rootView = view;
         sessionManager = new SessionManager(requireContext());
         repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
+        repository.ensureDefaultCategoriesIfEmpty();
         bindData(view);
         return view;
     }
@@ -48,6 +49,7 @@ public class HomeFragment extends Fragment {
         super.onResume();
         if (rootView != null) {
             repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
+            repository.ensureDefaultCategoriesIfEmpty();
             bindData(rootView);
         }
     }
@@ -55,27 +57,30 @@ public class HomeFragment extends Fragment {
     private void bindData(View view) {
         Context context = requireContext();
         TextView balanceText = view.findViewById(R.id.balanceText);
-        TextView incomeAmount = view.findViewById(R.id.incomeAmount);
+        TextView limitAmount = view.findViewById(R.id.incomeAmount);
         TextView expenseAmount = view.findViewById(R.id.expenseAmount);
         ProgressBar monthProgress = view.findViewById(R.id.monthProgress);
         TextView budgetProgressLabel = view.findViewById(R.id.budgetProgressLabel);
         LinearLayout topCategoryList = view.findViewById(R.id.topCategoryList);
         LinearLayout recentTransactions = view.findViewById(R.id.recentTransactions);
 
-        double income = 0;
-        double expense = repository.getTotalExpenses();
-        double balance = income - expense;
-
-        balanceText.setText(FormatUtils.formatCurrency(balance));
-        incomeAmount.setText(FormatUtils.formatCurrency(income));
-        expenseAmount.setText(FormatUtils.formatCurrency(expense));
-
         List<BudgetCategory> budgets = repository.getBudgets();
         double totalLimit = 0;
-        double totalSpent = 0;
         for (BudgetCategory item : budgets) {
             if (item.getLimit() != null && item.getLimit() > 0) {
                 totalLimit += item.getLimit();
+            }
+        }
+        double expense = repository.getTotalExpenses();
+        double balance = totalLimit - expense;
+
+        balanceText.setText(FormatUtils.formatCurrency(balance));
+        limitAmount.setText(FormatUtils.formatCurrency(totalLimit));
+        expenseAmount.setText(FormatUtils.formatCurrency(expense));
+
+        double totalSpent = 0;
+        for (BudgetCategory item : budgets) {
+            if (item.getLimit() != null && item.getLimit() > 0) {
                 totalSpent += item.getSpent();
             }
         }

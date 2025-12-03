@@ -29,6 +29,28 @@ public class ExpenseRepository {
         this.appContext = context.getApplicationContext();
     }
 
+    public void ensureDefaultCategoriesIfEmpty() {
+        if (userId <= 0) {
+            return;
+        }
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM categories WHERE userId = ?", new String[]{String.valueOf(userId)});
+        long count = 0;
+        if (cursor.moveToFirst()) {
+            count = cursor.getLong(0);
+        }
+        cursor.close();
+        if (count > 0) {
+            return;
+        }
+        addCategory("Ăn uống", color(R.color.danger_red), 1_500_000d);
+        addCategory("Đi lại", color(R.color.warning_yellow), 500_000d);
+        addCategory("Đi chơi", color(R.color.blue_light), 800_000d);
+        addCategory("Nhà & hoá đơn", color(R.color.gray_700), 1_200_000d);
+        addCategory("Mua sắm", color(R.color.blue_600), 1_000_000d);
+        addCategory("Sức khoẻ", color(R.color.teal), 600_000d);
+    }
+
     public List<Category> getCategories() {
         List<Category> items = new ArrayList<>();
         if (userId <= 0) {
@@ -194,5 +216,9 @@ public class ExpenseRepository {
 
     private int defaultCategoryColor() {
         return ContextCompat.getColor(appContext, R.color.gray_500);
+    }
+
+    private int color(int resId) {
+        return ContextCompat.getColor(appContext, resId);
     }
 }

@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.asm_app.model.User;
+import com.example.asm_app.repositories.ExpenseRepository;
 import com.example.asm_app.repositories.UserRepository;
 import com.example.asm_app.util.SessionManager;
 
@@ -66,6 +67,8 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
         sessionManager.saveUser(user.getId(), user.getName(), user.getEmail());
+        ExpenseRepository expenseRepository = new ExpenseRepository(this, user.getId());
+        expenseRepository.ensureDefaultCategoriesIfEmpty();
         openHome();
     }
 
