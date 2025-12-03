@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +21,8 @@ import com.example.asm_app.util.FormatUtils;
 import com.example.asm_app.util.SessionManager;
 
 import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReportFragment extends Fragment {
 
@@ -31,6 +35,8 @@ public class ReportFragment extends Fragment {
     private TextView totalSpentText;
     private TextView balanceText;
     private RadioGroup rangeGroup;
+    private PieChartView pieChartView;
+    private LinearLayout legendContainer;
 
     @Nullable
     @Override
@@ -51,9 +57,10 @@ public class ReportFragment extends Fragment {
         totalSpentText = view.findViewById(R.id.reportTotalSpent);
         balanceText = view.findViewById(R.id.reportBalance);
         rangeGroup = view.findViewById(R.id.reportRangeGroup);
+        pieChartView = view.findViewById(R.id.reportPieChart);
+        legendContainer = view.findViewById(R.id.reportLegend);
 
         view.findViewById(R.id.reportLogoutBtn).setOnClickListener(v -> logout());
-        view.findViewById(R.id.reportApplyBtn).setOnClickListener(v -> bindReport());
 
         rangeGroup.setOnCheckedChangeListener((group, checkedId) -> bindReport());
     }
@@ -81,6 +88,8 @@ public class ReportFragment extends Fragment {
         totalLimitText.setText(FormatUtils.formatCurrency(totalLimitWithRecurring));
         totalSpentText.setText(FormatUtils.formatCurrency(totalSpent));
         balanceText.setText(FormatUtils.formatCurrency(balance));
+
+        bindPie(totalSpent, totalLimitWithRecurring);
     }
 
     private long[] getSelectedRange() {
@@ -119,5 +128,42 @@ public class ReportFragment extends Fragment {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         requireActivity().finishAffinity();
+    }
+
+    private void bindPie(double totalSpent, double totalLimitWithRecurring) {
+        legendContainer.removeAllViews();
+        List<PieChartView.Segment> segments = new ArrayList<>();
+
+        // "Chi tiêu" slice
+        if (totalSpent > 0) {
+            segments.add(new PieChartView.Segment((float) totalSpent, getResources().getColor(R.color.danger_red)));
+            addLegendItem(getString(R.string.label_spent), totalSpent, R.color.danger_red);
+        }
+
+        // "Còn lại" slice
+        double remaining = Math.max(0, totalLimitWithRecurring - totalSpent);
+        if (remaining > 0) {
+            segments.add(new PieChartView.Segment((float) remaining, getResources().getColor(R.color.success_green)));
+            addLegendItem(getString(R.string.label_remaining), remaining, R.color.success_green);
+        }
+
+        if (segments.isEmpty()) {
+            pieChartView.setSegments(new ArrayList<>());
+            addLegendItem("Chưa có dữ liệu", 0, R.color.gray_300);
+        } else {
+            pieChartView.setSegments(segments);
+        }
+    }
+
+    private void addLegendItem(String label, double amount, int colorRes) {
+        View item = LayoutInflater.from(requireContext()).inflate(R.layout.item_pie_legend, legendContainer, false);
+        View dot = item.findViewById(R.id.legendDot);
+        TextView title = item.findViewById(R.id.legendLabel);
+        TextView value = item.findViewById(R.id.legendValue);
+
+        dot.getBackground().setTint(getResources().getColor(colorRes));
+        title.setText(label);
+        value.setText(FormatUtils.formatCurrency(amount));
+        legendContainer.addView(item);
     }
 }
