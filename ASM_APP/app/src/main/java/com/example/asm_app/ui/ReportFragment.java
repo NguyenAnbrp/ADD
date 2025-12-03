@@ -203,6 +203,10 @@ public class ReportFragment extends Fragment {
         extraLine2.setVisibility(View.GONE);
         extraLine3.setVisibility(View.GONE);
         extraLine4.setVisibility(View.GONE);
+        extraLine1.setText("");
+        extraLine2.setText("");
+        extraLine3.setText("");
+        extraLine4.setText("");
 
         if (checked == R.id.reportRangeMonth) {
             // Average weekly spend in month
