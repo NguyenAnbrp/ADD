@@ -3,6 +3,7 @@ package com.example.asm_app.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -45,7 +46,7 @@ public class HomeFragment extends Fragment {
         repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
         repository.ensureDefaultCategoriesIfEmpty();
         View menuBtn = view.findViewById(R.id.menuButton);
-        menuBtn.setOnClickListener(v -> showAccountMenu(menuBtn));
+        menuBtn.setOnClickListener(this::showAccountMenu);
         bindData(view);
         return view;
     }
@@ -57,7 +58,7 @@ public class HomeFragment extends Fragment {
             repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
             repository.ensureDefaultCategoriesIfEmpty();
             View menuBtn = rootView.findViewById(R.id.menuButton);
-            menuBtn.setOnClickListener(v -> showAccountMenu(menuBtn));
+            menuBtn.setOnClickListener(this::showAccountMenu);
             bindData(rootView);
         }
     }
@@ -85,6 +86,8 @@ public class HomeFragment extends Fragment {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 true);
         popupWindow.setElevation(12f);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        popupWindow.setOutsideTouchable(true);
 
         reportBtn.setOnClickListener(v -> {
             popupWindow.dismiss();
@@ -129,13 +132,15 @@ public class HomeFragment extends Fragment {
                 totalLimit += item.getLimit();
             }
         }
-        double expense = repository.getTotalExpenses();
         double recurringPlanned = repository.getRecurringPlannedForCurrentMonth();
+        // Cộng khoản định kỳ vào hạn mức để không âm khi trừ
+        double totalLimitWithRecurring = totalLimit + recurringPlanned;
+        double expense = repository.getTotalExpenses();
         double totalSpentEffective = expense + recurringPlanned;
-        double balance = totalLimit - totalSpentEffective;
+        double balance = totalLimitWithRecurring - totalSpentEffective;
 
         balanceText.setText(FormatUtils.formatCurrency(balance));
-        limitAmount.setText(FormatUtils.formatCurrency(totalLimit));
+        limitAmount.setText(FormatUtils.formatCurrency(totalLimitWithRecurring));
         expenseAmount.setText(FormatUtils.formatCurrency(totalSpentEffective));
 
         double totalSpent = recurringPlanned;
@@ -144,7 +149,7 @@ public class HomeFragment extends Fragment {
                 totalSpent += item.getSpent();
             }
         }
-        int progressValue = totalLimit > 0 ? Math.min(100, (int) ((totalSpent / totalLimit) * 100)) : 0;
+        int progressValue = totalLimitWithRecurring > 0 ? Math.min(100, (int) ((totalSpent / totalLimitWithRecurring) * 100)) : 0;
         monthProgress.setProgress(progressValue);
         budgetProgressLabel.setText(progressValue + "% ngân sách đã dùng");
 
