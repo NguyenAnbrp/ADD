@@ -42,7 +42,8 @@ public class HomeFragment extends Fragment {
         sessionManager = new SessionManager(requireContext());
         repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
         repository.ensureDefaultCategoriesIfEmpty();
-        view.findViewById(R.id.logoutButton).setOnClickListener(v -> handleLogout());
+        View logoutBtn = view.findViewById(R.id.logoutButton);
+        logoutBtn.setOnClickListener(v -> handleLogout());
         bindData(view);
         return view;
     }
