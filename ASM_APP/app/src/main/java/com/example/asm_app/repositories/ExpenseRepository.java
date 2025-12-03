@@ -237,6 +237,21 @@ public class ExpenseRepository {
         return total;
     }
 
+    public double getTotalLimit() {
+        if (userId <= 0) {
+            return 0;
+        }
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT IFNULL(SUM(limitAmount),0) FROM categories WHERE userId = ?",
+                new String[]{String.valueOf(userId)});
+        double total = 0;
+        if (cursor.moveToFirst()) {
+            total = cursor.getDouble(0);
+        }
+        cursor.close();
+        return total;
+    }
+
     public double getExpensesTotalBetween(long startMillis, long endMillis) {
         if (userId <= 0) {
             return 0;
