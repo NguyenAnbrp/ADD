@@ -1,5 +1,6 @@
 package com.example.asm_app;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,13 +11,23 @@ import com.example.asm_app.ui.BudgetFragment;
 import com.example.asm_app.ui.HomeFragment;
 import com.example.asm_app.ui.RecurringFragment;
 import com.example.asm_app.ui.TransactionsFragment;
+import com.example.asm_app.util.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private SessionManager sessionManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sessionManager = new SessionManager(this);
+        if (sessionManager.getUserId() <= 0) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_main);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNav);
