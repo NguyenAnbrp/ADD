@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp"
-        android:paddingTop="32dp">
+        android:paddingTop="48dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,12 +32,14 @@
 
             <ImageView
                 android:id="@+id/logoutButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="6dp"
                 android:src="@drawable/logout_icon"
                 android:clickable="true"
                 android:focusable="true"
                 android:contentDescription="Đăng xuất"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless"
                 app:tint="@color/gray_500" />
         </LinearLayout>
 
