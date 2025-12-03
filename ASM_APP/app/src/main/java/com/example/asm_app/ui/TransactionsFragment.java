@@ -52,6 +52,7 @@ public class TransactionsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_transactions, container, false);
         sessionManager = new SessionManager(requireContext());
         repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
+        repository.ensureDefaultCategoriesIfEmpty();
         setup(view);
         return view;
     }
@@ -59,6 +60,7 @@ public class TransactionsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        repository.ensureDefaultCategoriesIfEmpty();
         loadData();
     }
 

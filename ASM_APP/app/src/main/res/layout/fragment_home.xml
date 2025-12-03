@@ -46,7 +46,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tổng số dư hiện tại"
+                android:text="Số dư còn lại"
                 android:textColor="@color/gray_300"
                 android:textSize="14sp" />
 
@@ -92,7 +92,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
-                            android:text="Thu nhập"
+                            android:text="Hạn mức"
                             android:textColor="@color/gray_700"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -183,7 +183,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="Tiến độ tháng này"
+                        android:text="Tiêu dùng tháng này"
                         android:textColor="@color/navy_900"
                         android:textSize="15sp"
                         android:textStyle="bold" />
