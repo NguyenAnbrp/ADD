@@ -16,7 +16,7 @@
             android:id="@+id/reportUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nguoi dung"
+            android:text="Người dùng"
             android:textColor="@color/navy_900"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Bao cao tai chinh"
+            android:text="Báo cáo tài chính"
             android:textColor="@color/navy_900"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -57,21 +57,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="Tuan" />
+                android:text="Tuần" />
 
             <RadioButton
                 android:id="@+id/reportRangeMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Thang" />
+                android:text="Tháng" />
 
             <RadioButton
                 android:id="@+id/reportRangeYear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Nam" />
+                android:text="Năm" />
         </RadioGroup>
 
         <LinearLayout
@@ -82,101 +82,117 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/reportSummarySection"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tong han muc (kem dinh ky)"
-                android:textColor="@color/gray_700"
-                android:textSize="13sp" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/reportTotalLimit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="0 đ"
-                android:textColor="@color/navy_900"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tổng hạn mức (kèm định kỳ)"
+                    android:textColor="@color/gray_700"
+                    android:textSize="13sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Chi tieu (gôm dinh ky)"
-                android:textColor="@color/gray_700"
-                android:textSize="13sp" />
+                <TextView
+                    android:id="@+id/reportTotalLimit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="0 đ"
+                    android:textColor="@color/navy_900"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/reportTotalSpent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="0 đ"
-                android:textColor="@color/danger_red"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Chi tiêu (gồm định kỳ)"
+                    android:textColor="@color/gray_700"
+                    android:textSize="13sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="So du con lai"
-                android:textColor="@color/gray_700"
-                android:textSize="13sp" />
+                <TextView
+                    android:id="@+id/reportTotalSpent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="0 đ"
+                    android:textColor="@color/danger_red"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/reportBalance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="0 đ"
-                android:textColor="@color/navy_900"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Số dư còn lại"
+                    android:textColor="@color/gray_700"
+                    android:textSize="13sp" />
 
-            <TextView
-                android:id="@+id/reportExtra1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:textColor="@color/gray_700"
-                android:textSize="14sp"
-                android:visibility="gone" />
+                <TextView
+                    android:id="@+id/reportBalance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="0 đ"
+                    android:textColor="@color/navy_900"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/reportExtra2"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/reportExtraSection"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="@color/gray_700"
-                android:textSize="14sp"
-                android:visibility="gone" />
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:visibility="gone">
 
-            <TextView
-                android:id="@+id/reportExtra3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="@color/gray_700"
-                android:textSize="14sp"
-                android:visibility="gone" />
+                <TextView
+                    android:id="@+id/reportExtra1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/gray_700"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/reportExtra4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="@color/gray_700"
-                android:textSize="14sp"
-                android:visibility="gone" />
+                <TextView
+                    android:id="@+id/reportExtra2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/gray_700"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/reportExtra3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/gray_700"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/reportExtra4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/gray_700"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+            </LinearLayout>
         </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Phan bo chi tieu"
+            android:text="Phân bổ chi tiêu"
             android:textColor="@color/navy_900"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -200,7 +216,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_button_primary"
-            android:text="Dang xuat"
+            android:text="Đăng xuất"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="15sp" />
