@@ -16,7 +16,7 @@
             android:id="@+id/reportUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Người dùng"
+            android:text="User"
             android:textColor="@color/navy_900"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Báo cáo tài chính"
+            android:text="Financial report"
             android:textColor="@color/navy_900"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -57,21 +57,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="Tuần" />
+                android:text="Week" />
 
             <RadioButton
                 android:id="@+id/reportRangeMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Tháng" />
+                android:text="Month" />
 
             <RadioButton
                 android:id="@+id/reportRangeYear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Năm" />
+                android:text="Year" />
         </RadioGroup>
 
         <LinearLayout
@@ -86,7 +86,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tổng hạn mức (kèm định kỳ)"
+                android:text="Total limit (inc. recurring)"
                 android:textColor="@color/gray_700"
                 android:textSize="13sp" />
 
@@ -104,7 +104,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Chi tiêu (gồm định kỳ)"
+                android:text="Spend (inc. recurring)"
                 android:textColor="@color/gray_700"
                 android:textSize="13sp" />
 
@@ -122,7 +122,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Số dư còn lại"
+                android:text="Remaining balance"
                 android:textColor="@color/gray_700"
                 android:textSize="13sp" />
 
@@ -187,7 +187,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Phân bổ chi tiêu"
+            android:text="Spending allocation"
             android:textColor="@color/navy_900"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -211,7 +211,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_button_primary"
-            android:text="Đăng xuất"
+            android:text="Log out"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="15sp" />
