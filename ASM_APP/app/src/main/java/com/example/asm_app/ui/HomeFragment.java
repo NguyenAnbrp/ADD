@@ -1,16 +1,12 @@
 package com.example.asm_app.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -19,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.asm_app.LoginActivity;
 import com.example.asm_app.R;
 import com.example.asm_app.model.BudgetCategory;
 import com.example.asm_app.model.Expense;
@@ -45,8 +40,6 @@ public class HomeFragment extends Fragment {
         sessionManager = new SessionManager(requireContext());
         repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
         repository.ensureDefaultCategoriesIfEmpty();
-        View menuBtn = view.findViewById(R.id.menuButton);
-        menuBtn.setOnClickListener(this::showAccountMenu);
         bindData(view);
         return view;
     }
@@ -57,62 +50,8 @@ public class HomeFragment extends Fragment {
         if (rootView != null) {
             repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
             repository.ensureDefaultCategoriesIfEmpty();
-            View menuBtn = rootView.findViewById(R.id.menuButton);
-            menuBtn.setOnClickListener(this::showAccountMenu);
             bindData(rootView);
         }
-    }
-
-    private void handleLogout() {
-        sessionManager.clear();
-        Intent intent = new Intent(requireContext(), LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        requireActivity().finishAffinity();
-    }
-
-    private void showAccountMenu(View anchor) {
-        View menuView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_account_menu, null);
-        TextView nameText = menuView.findViewById(R.id.accountName);
-        TextView emailText = menuView.findViewById(R.id.accountEmail);
-        View reportBtn = menuView.findViewById(R.id.accountReportBtn);
-        View logoutBtn = menuView.findViewById(R.id.accountLogoutBtn);
-
-        nameText.setText(sessionManager.getUserName().isEmpty() ? "Người dùng" : sessionManager.getUserName());
-        emailText.setText(sessionManager.getUserEmail().isEmpty() ? "Chưa có email" : sessionManager.getUserEmail());
-
-        final PopupWindow popupWindow = new PopupWindow(menuView,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                true);
-        popupWindow.setElevation(12f);
-        popupWindow.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        popupWindow.setOutsideTouchable(true);
-
-        reportBtn.setOnClickListener(v -> {
-            popupWindow.dismiss();
-            showReportOptions();
-        });
-
-        logoutBtn.setOnClickListener(v -> {
-            popupWindow.dismiss();
-            handleLogout();
-        });
-
-        int[] location = new int[2];
-        anchor.getLocationOnScreen(location);
-        popupWindow.showAtLocation(anchor, Gravity.TOP | Gravity.END, 24, location[1] + anchor.getHeight());
-    }
-
-    private void showReportOptions() {
-        final String[] options = new String[]{"Báo cáo tuần", "Báo cáo tháng"};
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Xem báo cáo")
-                .setItems(options, (dialog, which) -> {
-                    String choice = options[which];
-                    android.widget.Toast.makeText(requireContext(), "Đang mở " + choice, android.widget.Toast.LENGTH_SHORT).show();
-                })
-                .show();
     }
 
     private void bindData(View view) {
@@ -133,7 +72,6 @@ public class HomeFragment extends Fragment {
             }
         }
         double recurringPlanned = repository.getRecurringPlannedForCurrentMonth();
-        // Cộng khoản định kỳ vào hạn mức để không âm khi trừ
         double totalLimitWithRecurring = totalLimit + recurringPlanned;
         double expense = repository.getTotalExpenses();
         double totalSpentEffective = expense + recurringPlanned;

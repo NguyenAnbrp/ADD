@@ -16,4 +16,8 @@
         android:id="@+id/nav_recurring"
         android:icon="@drawable/ic_recurring"
         android:title="Định kỳ" />
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/menu_icon"
+        android:title="Tài khoản" />
 </menu>
