@@ -16,7 +16,7 @@
             android:id="@+id/reportUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Người dùng"
+            android:text="Nguoi dung"
             android:textColor="@color/navy_900"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Báo cáo tài chính"
+            android:text="Bao cao tai chinh"
             android:textColor="@color/navy_900"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -57,21 +57,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="Tuần" />
+                android:text="Tuan" />
 
             <RadioButton
                 android:id="@+id/reportRangeMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Tháng" />
+                android:text="Thang" />
 
             <RadioButton
                 android:id="@+id/reportRangeYear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Năm" />
+                android:text="Nam" />
         </RadioGroup>
 
         <LinearLayout
@@ -85,7 +85,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tổng hạn mức (kèm định kỳ)"
+                android:text="Tong han muc (kem dinh ky)"
                 android:textColor="@color/gray_700"
                 android:textSize="13sp" />
 
@@ -103,7 +103,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Chi tiêu (gồm định kỳ)"
+                android:text="Chi tieu (gôm dinh ky)"
                 android:textColor="@color/gray_700"
                 android:textSize="13sp" />
 
@@ -121,7 +121,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Số dư còn lại"
+                android:text="So du con lai"
                 android:textColor="@color/gray_700"
                 android:textSize="13sp" />
 
@@ -139,8 +139,8 @@
                 android:id="@+id/reportExtra1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:textColor="@color/navy_900"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/gray_700"
                 android:textSize="14sp"
                 android:visibility="gone" />
 
@@ -149,7 +149,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:textColor="@color/navy_900"
+                android:textColor="@color/gray_700"
                 android:textSize="14sp"
                 android:visibility="gone" />
 
@@ -158,7 +158,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:textColor="@color/navy_900"
+                android:textColor="@color/gray_700"
                 android:textSize="14sp"
                 android:visibility="gone" />
 
@@ -167,7 +167,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:textColor="@color/navy_900"
+                android:textColor="@color/gray_700"
                 android:textSize="14sp"
                 android:visibility="gone" />
         </LinearLayout>
@@ -176,7 +176,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Phân bổ chi tiêu"
+            android:text="Phan bo chi tieu"
             android:textColor="@color/navy_900"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -200,7 +200,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_button_primary"
-            android:text="Đăng xuất"
+            android:text="Dang xuat"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="15sp" />
