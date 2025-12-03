@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/transactionTitleInput"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_input"
+        android:hint="Tên giao dịch"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:textColor="@color/navy_900"
+        android:textColorHint="@color/gray_500" />
+
+    <EditText
+        android:id="@+id/transactionAmountInput"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_input"
+        android:hint="Số tiền"
+        android:inputType="numberDecimal"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:textColor="@color/navy_900"
+        android:textColorHint="@color/gray_500" />
+
+    <EditText
+        android:id="@+id/transactionDateInput"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_input"
+        android:focusable="false"
+        android:clickable="true"
+        android:hint="Ngày giao dịch"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:textColor="@color/navy_900"
+        android:textColorHint="@color/gray_500" />
+
+    <Spinner
+        android:id="@+id/transactionCategorySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" />
+
+</LinearLayout>

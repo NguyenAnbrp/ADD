@@ -6,14 +6,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
@@ -21,30 +26,72 @@ import com.example.asm_app.R;
 import com.example.asm_app.model.BudgetCategory;
 import com.example.asm_app.repositories.ExpenseRepository;
 import com.example.asm_app.util.FormatUtils;
+import com.example.asm_app.util.SessionManager;
 
 import java.util.List;
 
 public class BudgetFragment extends Fragment {
 
     private ExpenseRepository repository;
+    private SessionManager sessionManager;
+    private LinearLayout budgetList;
+
+    private final int[] colorPalette = new int[]{
+            R.color.danger_red,
+            R.color.blue_600,
+            R.color.warning_yellow,
+            R.color.success_green,
+            R.color.teal,
+            R.color.gray_700,
+            R.color.blue_light,
+            R.color.gray_300
+    };
+    private final String[] colorLabels = new String[]{
+            "Đỏ",
+            "Xanh dương",
+            "Vàng",
+            "Xanh lá",
+            "Xanh ngọc",
+            "Xám đậm",
+            "Xanh nhạt",
+            "Xám nhạt"
+    };
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_budget, container, false);
-        repository = new ExpenseRepository(requireContext());
+        sessionManager = new SessionManager(requireContext());
+        repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
+        budgetList = view.findViewById(R.id.budgetList);
         setup(view);
         return view;
     }
 
-    private void setup(View view) {
-        Context context = requireContext();
-        LinearLayout budgetList = view.findViewById(R.id.budgetList);
-        Button addCategoryBtn = view.findViewById(R.id.addCategoryBtn);
-        addCategoryBtn.setOnClickListener(v -> Toast.makeText(context, "Thêm danh mục sẽ có trong phiên bản tiếp theo", Toast.LENGTH_SHORT).show());
+    @Override
+    public void onResume() {
+        super.onResume();
+        renderBudgets();
+    }
 
-        List<BudgetCategory> budgets = repository.getBudgets();
+    private void setup(View view) {
+        Button addCategoryBtn = view.findViewById(R.id.addCategoryBtn);
+        addCategoryBtn.setOnClickListener(v -> showAddCategoryDialog());
+        renderBudgets();
+    }
+
+    private void renderBudgets() {
+        Context context = requireContext();
         budgetList.removeAllViews();
+        List<BudgetCategory> budgets = repository.getBudgets();
+        if (budgets.isEmpty()) {
+            TextView empty = new TextView(context);
+            empty.setText("Chưa có danh mục chi tiêu. Thêm danh mục mới để theo dõi ngân sách.");
+            empty.setTextColor(getResources().getColor(R.color.gray_700));
+            empty.setPadding(16, 16, 16, 16);
+            budgetList.addView(empty);
+            return;
+        }
         for (BudgetCategory category : budgets) {
             View item = LayoutInflater.from(context).inflate(R.layout.item_budget, budgetList, false);
             TextView avatar = item.findViewById(R.id.budgetAvatar);
@@ -69,6 +116,49 @@ public class BudgetFragment extends Fragment {
 
             budgetList.addView(item);
         }
+    }
+
+    private void showAddCategoryDialog() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_category, null);
+        EditText nameInput = dialogView.findViewById(R.id.categoryNameInput);
+        EditText limitInput = dialogView.findViewById(R.id.categoryLimitInput);
+        Spinner colorSpinner = dialogView.findViewById(R.id.categoryColorSpinner);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, colorLabels);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        colorSpinner.setAdapter(adapter);
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Thêm danh mục")
+                .setView(dialogView)
+                .setPositiveButton("Lưu", (dialog, which) -> {
+                    String name = nameInput.getText().toString().trim();
+                    String limitText = limitInput.getText().toString().trim();
+                    if (name.isEmpty()) {
+                        Toast.makeText(requireContext(), "Tên danh mục không được để trống", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Double limit = null;
+                    if (!limitText.isEmpty()) {
+                        try {
+                            limit = Double.parseDouble(limitText);
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(requireContext(), "Hạn mức không hợp lệ", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                    int colorRes = colorPalette[colorSpinner.getSelectedItemPosition() % colorPalette.length];
+                    int color = ContextCompat.getColor(requireContext(), colorRes);
+                    long result = repository.addCategory(name, color, limit);
+                    if (result == -1) {
+                        Toast.makeText(requireContext(), "Danh mục đã tồn tại", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(requireContext(), "Đã lưu danh mục", Toast.LENGTH_SHORT).show();
+                    }
+                    renderBudgets();
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private String firstLetter(String value) {

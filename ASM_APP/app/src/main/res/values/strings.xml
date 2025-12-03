@@ -1,14 +1,3 @@
 <resources>
     <string name="app_name">ASM_APP</string>
-    <string-array name="expense_categories">
-        <item>Ăn uống</item>
-        <item>Thuê nhà</item>
-        <item>Di chuyển</item>
-        <item>Học phí</item>
-        <item>Giải trí</item>
-        <item>Điện nước</item>
-        <item>Mua sắm</item>
-        <item>Sức khỏe</item>
-        <item>Khác</item>
-    </string-array>
 </resources>
