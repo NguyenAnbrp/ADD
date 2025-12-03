@@ -28,11 +28,6 @@
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_recurring"
-                app:tint="@color/gray_500" />
         </LinearLayout>
 
         <LinearLayout
