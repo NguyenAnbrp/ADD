@@ -62,8 +62,9 @@ public class HomeFragment extends Fragment {
     private void handleLogout() {
         sessionManager.clear();
         Intent intent = new Intent(requireContext(), LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        requireActivity().finish();
+        requireActivity().finishAffinity();
     }
 
     private void bindData(View view) {
