@@ -2,18 +2,18 @@ package com.example.asm_app.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.LinearLayout;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.example.asm_app.LoginActivity;
 import com.example.asm_app.R;
@@ -22,8 +22,8 @@ import com.example.asm_app.repositories.ExpenseRepository.CategorySpend;
 import com.example.asm_app.util.FormatUtils;
 import com.example.asm_app.util.SessionManager;
 
-import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class ReportFragment extends Fragment {
@@ -33,6 +33,8 @@ public class ReportFragment extends Fragment {
 
     private TextView userName;
     private TextView userEmail;
+    private LinearLayout summaryCard;
+    private LinearLayout extraCard;
     private TextView totalLimitText;
     private TextView totalSpentText;
     private TextView balanceText;
@@ -63,6 +65,8 @@ public class ReportFragment extends Fragment {
     private void bindViews(View view) {
         userName = view.findViewById(R.id.reportUserName);
         userEmail = view.findViewById(R.id.reportUserEmail);
+        summaryCard = view.findViewById(R.id.reportSummaryCard);
+        extraCard = view.findViewById(R.id.reportExtraCard);
         totalLimitText = view.findViewById(R.id.reportTotalLimit);
         totalSpentText = view.findViewById(R.id.reportTotalSpent);
         balanceText = view.findViewById(R.id.reportBalance);
@@ -75,13 +79,14 @@ public class ReportFragment extends Fragment {
         legendContainer = view.findViewById(R.id.reportLegend);
 
         view.findViewById(R.id.reportLogoutBtn).setOnClickListener(v -> logout());
-
         rangeGroup.setOnCheckedChangeListener((group, checkedId) -> bindReport());
     }
 
     private void bindUserInfo() {
-        userName.setText(sessionManager.getUserName().isEmpty() ? "Người dùng" : sessionManager.getUserName());
-        userEmail.setText(sessionManager.getUserEmail().isEmpty() ? "Chưa có email" : sessionManager.getUserEmail());
+        String name = sessionManager.getUserName();
+        String email = sessionManager.getUserEmail();
+        userName.setText(name.isEmpty() ? "Người dùng" : name);
+        userEmail.setText(email.isEmpty() ? "Chưa có email" : email);
     }
 
     private void bindReport() {
@@ -89,7 +94,6 @@ public class ReportFragment extends Fragment {
         long start = range[0];
         long end = range[1];
 
-        // Tổng hạn mức (cộng thêm định kỳ để không âm)
         double limit = repository.getTotalLimit();
         double recurringPlanned = repository.getRecurringPlannedForCurrentMonth();
         double totalLimitWithRecurring = limit + recurringPlanned;
@@ -99,12 +103,20 @@ public class ReportFragment extends Fragment {
         double totalSpent = spentTransactions + spentRecurring;
         double balance = totalLimitWithRecurring - totalSpent;
 
-        totalLimitText.setText(FormatUtils.formatCurrency(totalLimitWithRecurring));
-        totalSpentText.setText(FormatUtils.formatCurrency(totalSpent));
-        balanceText.setText(FormatUtils.formatCurrency(balance));
+        int checked = rangeGroup.getCheckedRadioButtonId();
+        if (checked == R.id.reportRangeWeek) {
+            summaryCard.setVisibility(View.VISIBLE);
+            extraCard.setVisibility(View.GONE);
+            totalLimitText.setText(FormatUtils.formatCurrency(totalLimitWithRecurring));
+            totalSpentText.setText(FormatUtils.formatCurrency(totalSpent));
+            balanceText.setText(FormatUtils.formatCurrency(balance));
+        } else {
+            summaryCard.setVisibility(View.GONE);
+            extraCard.setVisibility(View.VISIBLE);
+        }
 
         bindPie(totalSpent, totalLimitWithRecurring);
-        bindExtraStats(totalLimitWithRecurring, totalSpent, start, end);
+        bindExtraStats(checked, totalLimitWithRecurring, totalSpent, start, end);
     }
 
     private long[] getSelectedRange() {
@@ -115,7 +127,6 @@ public class ReportFragment extends Fragment {
         } else if (checked == R.id.reportRangeYear) {
             cal.set(Calendar.DAY_OF_YEAR, 1);
         } else {
-            // Tuần: đưa về đầu tuần (thứ 2)
             cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
         }
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -155,7 +166,7 @@ public class ReportFragment extends Fragment {
         if (remaining < 0) remaining = 0;
 
         double totalForPercent = totalSpent + remaining;
-        if (totalForPercent <= 0) totalForPercent = 1; // avoid div by zero
+        if (totalForPercent <= 0) totalForPercent = 1;
 
         for (CategorySpend item : categorySpends) {
             if (item.spent <= 0) continue;
@@ -164,7 +175,6 @@ public class ReportFragment extends Fragment {
             addLegendItem(item.name + " (" + Math.round(percent) + "%)", item.spent, item.color);
         }
 
-        // Remaining slice
         if (remaining > 0) {
             double percent = (remaining / totalForPercent) * 100.0;
             int remainingColor = ContextCompat.getColor(requireContext(), R.color.success_green);
@@ -197,8 +207,7 @@ public class ReportFragment extends Fragment {
         legendContainer.addView(item);
     }
 
-    private void bindExtraStats(double totalLimit, double totalSpent, long start, long end) {
-        int checked = rangeGroup.getCheckedRadioButtonId();
+    private void bindExtraStats(int checked, double totalLimit, double totalSpent, long start, long end) {
         extraLine1.setVisibility(View.GONE);
         extraLine2.setVisibility(View.GONE);
         extraLine3.setVisibility(View.GONE);
@@ -207,9 +216,9 @@ public class ReportFragment extends Fragment {
         extraLine2.setText("");
         extraLine3.setText("");
         extraLine4.setText("");
+        extraCard.setVisibility(View.GONE);
 
         if (checked == R.id.reportRangeMonth) {
-            // Average weekly spend in month
             double days = Math.max(1, (end - start + 1) / (1000.0 * 60 * 60 * 24));
             double avgWeekly = totalSpent / Math.max(1, (days / 7.0));
             boolean exceeded = totalSpent > totalLimit;
@@ -217,16 +226,17 @@ public class ReportFragment extends Fragment {
             extraLine2.setText(exceeded ? "Đã vượt hạn mức tháng" : "Chưa vượt hạn mức tháng");
             extraLine1.setVisibility(View.VISIBLE);
             extraLine2.setVisibility(View.VISIBLE);
+            extraCard.setVisibility(View.VISIBLE);
         } else if (checked == R.id.reportRangeYear) {
             double avgMonthlyLimit = totalLimit / 12.0;
             double avgMonthlyBalance = (totalLimit - totalSpent) / 12.0;
-            int year = Calendar.getInstance().get(Calendar.YEAR);
+            Calendar yearCal = Calendar.getInstance();
+            yearCal.setTimeInMillis(start);
+            int year = yearCal.get(Calendar.YEAR);
             int monthsExceeded = repository.countMonthsExceededInYear(year);
-            long startYear = getSelectedRange()[0];
-            long endYear = getSelectedRange()[1];
-            List<String> exceededCategories = repository.getCategoriesExceededBetween(startYear, endYear);
+            List<String> exceededCategories = repository.getCategoriesExceededBetween(start, end);
             String exceededCatsText = exceededCategories.isEmpty() ? "Không vượt ngân sách nào" :
-                    "Vượt hạn mức: " + android.text.TextUtils.join(", ", exceededCategories);
+                    "Vượt hạn mức: " + TextUtils.join(", ", exceededCategories);
             extraLine1.setText("Hạn mức TB tháng: " + FormatUtils.formatCurrency(avgMonthlyLimit));
             extraLine2.setText("Số dư TB tháng: " + FormatUtils.formatCurrency(avgMonthlyBalance));
             extraLine3.setText("Số tháng vượt hạn mức: " + monthsExceeded);
@@ -235,8 +245,7 @@ public class ReportFragment extends Fragment {
             extraLine2.setVisibility(View.VISIBLE);
             extraLine3.setVisibility(View.VISIBLE);
             extraLine4.setVisibility(View.VISIBLE);
-        } else {
-            // week view: no extra lines
+            extraCard.setVisibility(View.VISIBLE);
         }
     }
 }
