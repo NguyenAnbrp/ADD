@@ -39,6 +39,7 @@ public class ReportFragment extends Fragment {
     private TextView extraLine1;
     private TextView extraLine2;
     private TextView extraLine3;
+    private TextView extraLine4;
     private RadioGroup rangeGroup;
     private PieChartView pieChartView;
     private LinearLayout legendContainer;
@@ -68,6 +69,7 @@ public class ReportFragment extends Fragment {
         extraLine1 = view.findViewById(R.id.reportExtra1);
         extraLine2 = view.findViewById(R.id.reportExtra2);
         extraLine3 = view.findViewById(R.id.reportExtra3);
+        extraLine4 = view.findViewById(R.id.reportExtra4);
         rangeGroup = view.findViewById(R.id.reportRangeGroup);
         pieChartView = view.findViewById(R.id.reportPieChart);
         legendContainer = view.findViewById(R.id.reportLegend);
@@ -200,6 +202,7 @@ public class ReportFragment extends Fragment {
         extraLine1.setVisibility(View.GONE);
         extraLine2.setVisibility(View.GONE);
         extraLine3.setVisibility(View.GONE);
+        extraLine4.setVisibility(View.GONE);
 
         if (checked == R.id.reportRangeMonth) {
             // Average weekly spend in month
@@ -215,12 +218,19 @@ public class ReportFragment extends Fragment {
             double avgMonthlyBalance = (totalLimit - totalSpent) / 12.0;
             int year = Calendar.getInstance().get(Calendar.YEAR);
             int monthsExceeded = repository.countMonthsExceededInYear(year);
+            long startYear = getSelectedRange()[0];
+            long endYear = getSelectedRange()[1];
+            List<String> exceededCategories = repository.getCategoriesExceededBetween(startYear, endYear);
+            String exceededCatsText = exceededCategories.isEmpty() ? "Không vượt ngân sách nào" :
+                    "Vượt hạn mức: " + android.text.TextUtils.join(", ", exceededCategories);
             extraLine1.setText("Hạn mức TB tháng: " + FormatUtils.formatCurrency(avgMonthlyLimit));
             extraLine2.setText("Số dư TB tháng: " + FormatUtils.formatCurrency(avgMonthlyBalance));
             extraLine3.setText("Số tháng vượt hạn mức: " + monthsExceeded);
+            extraLine4.setText(exceededCatsText);
             extraLine1.setVisibility(View.VISIBLE);
             extraLine2.setVisibility(View.VISIBLE);
             extraLine3.setVisibility(View.VISIBLE);
+            extraLine4.setVisibility(View.VISIBLE);
         } else {
             // week view: no extra lines
         }
