@@ -136,22 +136,33 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/reportApplyBtn"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@drawable/bg_button_primary"
-            android:text="Xem báo cáo"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="15sp" />
+            android:text="Phân bổ chi tiêu"
+            android:textColor="@color/navy_900"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <com.example.asm_app.ui.PieChartView
+            android:id="@+id/reportPieChart"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:layout_marginTop="12dp" />
+
+        <LinearLayout
+            android:id="@+id/reportLegend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp" />
 
         <Button
             android:id="@+id/reportLogoutBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/bg_button_primary"
             android:text="Đăng xuất"
             android:textAllCaps="false"
