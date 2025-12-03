@@ -15,10 +15,16 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="70dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="10dp"
         android:background="@color/white"
         app:labelVisibilityMode="labeled"
         app:itemIconTint="@color/bottom_nav_selector"
         app:itemTextColor="@color/bottom_nav_selector"
+        app:itemBackground="@drawable/bottom_nav_item_bg"
+        app:itemIconSize="24dp"
         app:menu="@menu/menu_bottom_nav" />
 </LinearLayout>

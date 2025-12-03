@@ -85,8 +85,8 @@ public class ReportFragment extends Fragment {
     private void bindUserInfo() {
         String name = sessionManager.getUserName();
         String email = sessionManager.getUserEmail();
-        userName.setText(name.isEmpty() ? "Người dùng" : name);
-        userEmail.setText(email.isEmpty() ? "Chưa có email" : email);
+        userName.setText(name.isEmpty() ? "User" : name);
+        userEmail.setText(email.isEmpty() ? "No email" : email);
     }
 
     private void bindReport() {
@@ -185,7 +185,7 @@ public class ReportFragment extends Fragment {
         if (segments.isEmpty()) {
             pieChartView.setSegments(new ArrayList<>());
             int gray = ContextCompat.getColor(requireContext(), R.color.gray_300);
-            addLegendItem("Chưa có dữ liệu", 0, gray);
+            addLegendItem("No data yet", 0, gray);
         } else {
             pieChartView.setSegments(segments);
         }
@@ -222,8 +222,8 @@ public class ReportFragment extends Fragment {
             double days = Math.max(1, (end - start + 1) / (1000.0 * 60 * 60 * 24));
             double avgWeekly = totalSpent / Math.max(1, (days / 7.0));
             boolean exceeded = totalSpent > totalLimit;
-            extraLine1.setText("Chi tiêu TB tuần: " + FormatUtils.formatCurrency(avgWeekly));
-            extraLine2.setText(exceeded ? "Đã vượt hạn mức tháng" : "Chưa vượt hạn mức tháng");
+            extraLine1.setText("Avg weekly spend: " + FormatUtils.formatCurrency(avgWeekly));
+            extraLine2.setText(exceeded ? "Exceeded monthly limit" : "Within monthly limit");
             extraLine1.setVisibility(View.VISIBLE);
             extraLine2.setVisibility(View.VISIBLE);
             extraCard.setVisibility(View.VISIBLE);
@@ -235,11 +235,11 @@ public class ReportFragment extends Fragment {
             int year = yearCal.get(Calendar.YEAR);
             int monthsExceeded = repository.countMonthsExceededInYear(year);
             List<String> exceededCategories = repository.getCategoriesExceededBetween(start, end);
-            String exceededCatsText = exceededCategories.isEmpty() ? "Không vượt ngân sách nào" :
-                    "Vượt hạn mức: " + TextUtils.join(", ", exceededCategories);
-            extraLine1.setText("Hạn mức TB tháng: " + FormatUtils.formatCurrency(avgMonthlyLimit));
-            extraLine2.setText("Số dư TB tháng: " + FormatUtils.formatCurrency(avgMonthlyBalance));
-            extraLine3.setText("Số tháng vượt hạn mức: " + monthsExceeded);
+            String exceededCatsText = exceededCategories.isEmpty() ? "No budgets exceeded" :
+                    "Exceeded: " + TextUtils.join(", ", exceededCategories);
+            extraLine1.setText("Avg monthly limit: " + FormatUtils.formatCurrency(avgMonthlyLimit));
+            extraLine2.setText("Avg monthly balance: " + FormatUtils.formatCurrency(avgMonthlyBalance));
+            extraLine3.setText("Months exceeded: " + monthsExceeded);
             extraLine4.setText(exceededCatsText);
             extraLine1.setVisibility(View.VISIBLE);
             extraLine2.setVisibility(View.VISIBLE);

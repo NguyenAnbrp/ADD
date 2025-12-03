@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">ASM_APP</string>
-    <string name="label_spent">Chi tiêu</string>
-    <string name="label_remaining">Còn lại</string>
+    <string name="label_spent">Spent</string>
+    <string name="label_remaining">Remaining</string>
 </resources>
