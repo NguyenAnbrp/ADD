@@ -237,6 +237,36 @@ public class ExpenseRepository {
         return total;
     }
 
+    public double getExpensesTotalBetween(long startMillis, long endMillis) {
+        if (userId <= 0) {
+            return 0;
+        }
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT IFNULL(SUM(amount),0) FROM expenses WHERE userId = ? AND dateMillis BETWEEN ? AND ?",
+                new String[]{String.valueOf(userId), String.valueOf(startMillis), String.valueOf(endMillis)});
+        double total = 0;
+        if (cursor.moveToFirst()) {
+            total = cursor.getDouble(0);
+        }
+        cursor.close();
+        return total;
+    }
+
+    public double getRecurringTotalBetween(long startMillis, long endMillis) {
+        if (userId <= 0) {
+            return 0;
+        }
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT IFNULL(SUM(amount),0) FROM recurring_expenses WHERE userId = ? AND startDateMillis BETWEEN ? AND ?",
+                new String[]{String.valueOf(userId), String.valueOf(startMillis), String.valueOf(endMillis)});
+        double total = 0;
+        if (cursor.moveToFirst()) {
+            total = cursor.getDouble(0);
+        }
+        cursor.close();
+        return total;
+    }
+
     private int defaultCategoryColor() {
         return ContextCompat.getColor(appContext, R.color.gray_500);
     }
