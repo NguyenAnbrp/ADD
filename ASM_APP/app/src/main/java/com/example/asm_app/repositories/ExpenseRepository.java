@@ -333,6 +333,23 @@ public class ExpenseRepository {
         return exceeded;
     }
 
+    public List<String> getCategoriesExceededBetween(long startMillis, long endMillis) {
+        List<String> exceeded = new ArrayList<>();
+        if (userId <= 0) return exceeded;
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sql = "SELECT c.name, c.limitAmount, IFNULL(SUM(e.amount),0) AS spent " +
+                "FROM categories c LEFT JOIN expenses e ON e.categoryId = c.id AND e.dateMillis BETWEEN ? AND ? " +
+                "WHERE c.userId = ? AND c.limitAmount IS NOT NULL AND c.limitAmount > 0 " +
+                "GROUP BY c.id, c.name, c.limitAmount " +
+                "HAVING spent > c.limitAmount";
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(startMillis), String.valueOf(endMillis), String.valueOf(userId)});
+        while (cursor.moveToNext()) {
+            exceeded.add(cursor.getString(0));
+        }
+        cursor.close();
+        return exceeded;
+    }
+
     private int defaultCategoryColor() {
         return ContextCompat.getColor(appContext, R.color.gray_500);
     }
