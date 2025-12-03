@@ -47,6 +47,10 @@ public class ReportFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_report, container, false);
         sessionManager = new SessionManager(requireContext());
+        if (sessionManager.getUserId() <= 0) {
+            logout();
+            return view;
+        }
         repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
         bindViews(view);
         bindUserInfo();
@@ -178,7 +182,11 @@ public class ReportFragment extends Fragment {
         TextView title = item.findViewById(R.id.legendLabel);
         TextView value = item.findViewById(R.id.legendValue);
 
-        dot.getBackground().setTint(getResources().getColor(colorRes));
+        if (dot.getBackground() != null) {
+            dot.getBackground().setTint(getResources().getColor(colorRes));
+        } else {
+            dot.setBackgroundColor(getResources().getColor(colorRes));
+        }
         title.setText(label);
         value.setText(FormatUtils.formatCurrency(amount));
         legendContainer.addView(item);
@@ -192,8 +200,8 @@ public class ReportFragment extends Fragment {
 
         if (checked == R.id.reportRangeMonth) {
             // Average weekly spend in month
-            double days = (end - start + 1) / (1000.0 * 60 * 60 * 24);
-            double avgWeekly = totalSpent / (days / 7.0);
+            double days = Math.max(1, (end - start + 1) / (1000.0 * 60 * 60 * 24));
+            double avgWeekly = totalSpent / Math.max(1, (days / 7.0));
             boolean exceeded = totalSpent > totalLimit;
             extraLine1.setText("Chi tiêu TB tuần: " + FormatUtils.formatCurrency(avgWeekly));
             extraLine2.setText(exceeded ? "Đã vượt hạn mức tháng" : "Chưa vượt hạn mức tháng");
