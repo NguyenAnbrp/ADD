@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import com.example.asm_app.LoginActivity;
 import com.example.asm_app.R;
 import com.example.asm_app.repositories.ExpenseRepository;
+import com.example.asm_app.repositories.ExpenseRepository.CategorySpend;
 import com.example.asm_app.util.FormatUtils;
 import com.example.asm_app.util.SessionManager;
 
@@ -34,6 +35,9 @@ public class ReportFragment extends Fragment {
     private TextView totalLimitText;
     private TextView totalSpentText;
     private TextView balanceText;
+    private TextView extraLine1;
+    private TextView extraLine2;
+    private TextView extraLine3;
     private RadioGroup rangeGroup;
     private PieChartView pieChartView;
     private LinearLayout legendContainer;
@@ -56,6 +60,9 @@ public class ReportFragment extends Fragment {
         totalLimitText = view.findViewById(R.id.reportTotalLimit);
         totalSpentText = view.findViewById(R.id.reportTotalSpent);
         balanceText = view.findViewById(R.id.reportBalance);
+        extraLine1 = view.findViewById(R.id.reportExtra1);
+        extraLine2 = view.findViewById(R.id.reportExtra2);
+        extraLine3 = view.findViewById(R.id.reportExtra3);
         rangeGroup = view.findViewById(R.id.reportRangeGroup);
         pieChartView = view.findViewById(R.id.reportPieChart);
         legendContainer = view.findViewById(R.id.reportLegend);
@@ -90,6 +97,7 @@ public class ReportFragment extends Fragment {
         balanceText.setText(FormatUtils.formatCurrency(balance));
 
         bindPie(totalSpent, totalLimitWithRecurring);
+        bindExtraStats(totalLimitWithRecurring, totalSpent, start, end);
     }
 
     private long[] getSelectedRange() {
@@ -134,17 +142,26 @@ public class ReportFragment extends Fragment {
         legendContainer.removeAllViews();
         List<PieChartView.Segment> segments = new ArrayList<>();
 
-        // "Chi tiêu" slice
-        if (totalSpent > 0) {
-            segments.add(new PieChartView.Segment((float) totalSpent, getResources().getColor(R.color.danger_red)));
-            addLegendItem(getString(R.string.label_spent), totalSpent, R.color.danger_red);
+        long[] range = getSelectedRange();
+        List<CategorySpend> categorySpends = repository.getCategorySpendBetween(range[0], range[1]);
+        double remaining = totalLimitWithRecurring - totalSpent;
+        if (remaining < 0) remaining = 0;
+
+        double totalForPercent = totalSpent + remaining;
+        if (totalForPercent <= 0) totalForPercent = 1; // avoid div by zero
+
+        for (CategorySpend item : categorySpends) {
+            if (item.spent <= 0) continue;
+            segments.add(new PieChartView.Segment((float) item.spent, item.color));
+            double percent = (item.spent / totalForPercent) * 100.0;
+            addLegendItem(item.name + " (" + Math.round(percent) + "%)", item.spent, item.color);
         }
 
-        // "Còn lại" slice
-        double remaining = Math.max(0, totalLimitWithRecurring - totalSpent);
+        // Remaining slice
         if (remaining > 0) {
+            double percent = (remaining / totalForPercent) * 100.0;
             segments.add(new PieChartView.Segment((float) remaining, getResources().getColor(R.color.success_green)));
-            addLegendItem(getString(R.string.label_remaining), remaining, R.color.success_green);
+            addLegendItem(getString(R.string.label_remaining) + " (" + Math.round(percent) + "%)", remaining, R.color.success_green);
         }
 
         if (segments.isEmpty()) {
@@ -165,5 +182,36 @@ public class ReportFragment extends Fragment {
         title.setText(label);
         value.setText(FormatUtils.formatCurrency(amount));
         legendContainer.addView(item);
+    }
+
+    private void bindExtraStats(double totalLimit, double totalSpent, long start, long end) {
+        int checked = rangeGroup.getCheckedRadioButtonId();
+        extraLine1.setVisibility(View.GONE);
+        extraLine2.setVisibility(View.GONE);
+        extraLine3.setVisibility(View.GONE);
+
+        if (checked == R.id.reportRangeMonth) {
+            // Average weekly spend in month
+            double days = (end - start + 1) / (1000.0 * 60 * 60 * 24);
+            double avgWeekly = totalSpent / (days / 7.0);
+            boolean exceeded = totalSpent > totalLimit;
+            extraLine1.setText("Chi tiêu TB tuần: " + FormatUtils.formatCurrency(avgWeekly));
+            extraLine2.setText(exceeded ? "Đã vượt hạn mức tháng" : "Chưa vượt hạn mức tháng");
+            extraLine1.setVisibility(View.VISIBLE);
+            extraLine2.setVisibility(View.VISIBLE);
+        } else if (checked == R.id.reportRangeYear) {
+            double avgMonthlyLimit = totalLimit / 12.0;
+            double avgMonthlyBalance = (totalLimit - totalSpent) / 12.0;
+            int year = Calendar.getInstance().get(Calendar.YEAR);
+            int monthsExceeded = repository.countMonthsExceededInYear(year);
+            extraLine1.setText("Hạn mức TB tháng: " + FormatUtils.formatCurrency(avgMonthlyLimit));
+            extraLine2.setText("Số dư TB tháng: " + FormatUtils.formatCurrency(avgMonthlyBalance));
+            extraLine3.setText("Số tháng vượt hạn mức: " + monthsExceeded);
+            extraLine1.setVisibility(View.VISIBLE);
+            extraLine2.setVisibility(View.VISIBLE);
+            extraLine3.setVisibility(View.VISIBLE);
+        } else {
+            // week view: no extra lines
+        }
     }
 }

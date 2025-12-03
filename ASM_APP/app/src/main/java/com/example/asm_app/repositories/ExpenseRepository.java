@@ -15,6 +15,7 @@ import com.example.asm_app.model.Expense;
 import com.example.asm_app.model.RecurringExpense;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -282,11 +283,77 @@ public class ExpenseRepository {
         return total;
     }
 
+    public List<CategorySpend> getCategorySpendBetween(long startMillis, long endMillis) {
+        List<CategorySpend> items = new ArrayList<>();
+        if (userId <= 0) return items;
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sql = "SELECT c.id, c.name, c.color, c.limitAmount, IFNULL(SUM(e.amount),0) " +
+                "FROM categories c " +
+                "LEFT JOIN expenses e ON e.categoryId = c.id AND e.dateMillis BETWEEN ? AND ? " +
+                "WHERE c.userId = ? " +
+                "GROUP BY c.id, c.name, c.color, c.limitAmount";
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(startMillis), String.valueOf(endMillis), String.valueOf(userId)});
+        while (cursor.moveToNext()) {
+            long id = cursor.getLong(0);
+            String name = cursor.getString(1);
+            int color = cursor.getInt(2);
+            Double limit = cursor.isNull(3) ? null : cursor.getDouble(3);
+            double spent = cursor.getDouble(4);
+            items.add(new CategorySpend(id, name, color, limit, spent));
+        }
+        cursor.close();
+        return items;
+    }
+
+    public int countMonthsExceededInYear(int year) {
+        if (userId <= 0) return 0;
+        int exceeded = 0;
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        for (int month = 0; month < 12; month++) {
+            cal.set(Calendar.MONTH, month);
+            long start = cal.getTimeInMillis();
+            cal.add(Calendar.MONTH, 1);
+            cal.add(Calendar.MILLISECOND, -1);
+            long end = cal.getTimeInMillis();
+            cal.add(Calendar.MILLISECOND, 1);
+
+            double limit = getTotalLimit();
+            double recurring = getRecurringTotalBetween(start, end);
+            double spent = getExpensesTotalBetween(start, end) + recurring;
+            if (spent > limit + recurring) {
+                exceeded++;
+            }
+        }
+        return exceeded;
+    }
+
     private int defaultCategoryColor() {
         return ContextCompat.getColor(appContext, R.color.gray_500);
     }
 
     private int color(int resId) {
         return ContextCompat.getColor(appContext, resId);
+    }
+
+    public static class CategorySpend {
+        public final long id;
+        public final String name;
+        public final int color;
+        public final Double limit;
+        public final double spent;
+
+        public CategorySpend(long id, String name, int color, Double limit, double spent) {
+            this.id = id;
+            this.name = name;
+            this.color = color;
+            this.limit = limit;
+            this.spent = spent;
+        }
     }
 }
