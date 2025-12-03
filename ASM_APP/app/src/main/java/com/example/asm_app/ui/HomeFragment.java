@@ -1,6 +1,7 @@
 package com.example.asm_app.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.asm_app.R;
+import com.example.asm_app.LoginActivity;
 import com.example.asm_app.model.BudgetCategory;
 import com.example.asm_app.model.Expense;
 import com.example.asm_app.repositories.ExpenseRepository;
@@ -40,6 +42,7 @@ public class HomeFragment extends Fragment {
         sessionManager = new SessionManager(requireContext());
         repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
         repository.ensureDefaultCategoriesIfEmpty();
+        view.findViewById(R.id.logoutButton).setOnClickListener(v -> handleLogout());
         bindData(view);
         return view;
     }
@@ -50,8 +53,16 @@ public class HomeFragment extends Fragment {
         if (rootView != null) {
             repository = new ExpenseRepository(requireContext(), sessionManager.getUserId());
             repository.ensureDefaultCategoriesIfEmpty();
+            rootView.findViewById(R.id.logoutButton).setOnClickListener(v -> handleLogout());
             bindData(rootView);
         }
+    }
+
+    private void handleLogout() {
+        sessionManager.clear();
+        Intent intent = new Intent(requireContext(), LoginActivity.class);
+        startActivity(intent);
+        requireActivity().finish();
     }
 
     private void bindData(View view) {

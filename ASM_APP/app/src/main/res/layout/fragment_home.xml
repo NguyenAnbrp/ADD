@@ -30,9 +30,13 @@
                 android:textStyle="bold" />
 
             <ImageView
+                android:id="@+id/logoutButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_recurring"
+                android:src="@drawable/logout_icon"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Đăng xuất"
                 app:tint="@color/gray_500" />
         </LinearLayout>
 
