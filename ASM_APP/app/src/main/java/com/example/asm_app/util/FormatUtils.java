@@ -15,9 +15,9 @@ public final class FormatUtils {
     public static String formatCurrency(double amount) {
         String formatted = CURRENCY_FORMAT.format(Math.abs(amount));
         if (amount < 0) {
-            return "-" + formatted + " đ";
+            return "-" + formatted + " VND";
         }
-        return formatted + " đ";
+        return formatted + " VND";
     }
 
     public static String formatDate(Date date) {

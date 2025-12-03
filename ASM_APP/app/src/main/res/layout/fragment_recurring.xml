@@ -24,7 +24,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Chi Tiêu Định Kỳ"
+                android:text="Recurring expenses"
                 android:textColor="@color/navy_900"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -58,7 +58,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Thêm khoản định kỳ"
+                        android:text="Add recurring expense"
                         android:textColor="@color/navy_900"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -66,7 +66,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tự động tạo giao dịch hàng tháng (ví dụ: tiền trọ, internet)."
+                        android:text="Auto-create monthly transactions (e.g., rent, internet)."
                         android:textColor="@color/gray_500"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/bg_input"
-                android:hint="Mô tả"
+                android:hint="Description"
                 android:padding="12dp"
                 android:textColor="@color/navy_900"
                 android:textColorHint="@color/gray_500" />
@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/bg_input"
-                android:hint="Số tiền (VND)"
+                android:hint="Amount (VND)"
                 android:inputType="number"
                 android:padding="12dp"
                 android:textColor="@color/navy_900"
@@ -110,7 +110,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@drawable/bg_input"
                 android:focusable="false"
-                android:hint="Ngày bắt đầu"
+                android:hint="Start date"
                 android:padding="12dp"
                 android:textColor="@color/navy_900"
                 android:textColorHint="@color/gray_500" />
@@ -121,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:background="@drawable/bg_button_primary"
-                android:text="Thêm khoản định kỳ"
+                android:text="Add recurring expense"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="15sp" />
@@ -131,7 +131,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Danh sách khoản chi định kỳ"
+            android:text="Recurring list"
             android:textColor="@color/navy_900"
             android:textSize="16sp"
             android:textStyle="bold" />

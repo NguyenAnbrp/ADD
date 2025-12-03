@@ -89,13 +89,13 @@ public class HomeFragment extends Fragment {
         }
         int progressValue = totalLimitWithRecurring > 0 ? Math.min(100, (int) ((totalSpent / totalLimitWithRecurring) * 100)) : 0;
         monthProgress.setProgress(progressValue);
-        budgetProgressLabel.setText(progressValue + "% ngân sách đã dùng");
+        budgetProgressLabel.setText(progressValue + "% of budget used");
 
         Collections.sort(budgets, Comparator.comparingDouble(BudgetCategory::getSpent).reversed());
         topCategoryList.removeAllViews();
         if (budgets.isEmpty()) {
             TextView empty = new TextView(context);
-            empty.setText("Chưa có danh mục chi tiêu.");
+            empty.setText("No spending categories yet.");
             empty.setTextColor(getResources().getColor(R.color.gray_700));
             topCategoryList.addView(empty);
         } else {
@@ -117,7 +117,7 @@ public class HomeFragment extends Fragment {
         recentTransactions.removeAllViews();
         if (expenses.isEmpty()) {
             TextView empty = new TextView(context);
-            empty.setText("Chưa có giao dịch gần đây.");
+            empty.setText("No recent transactions.");
             empty.setTextColor(getResources().getColor(R.color.gray_700));
             recentTransactions.addView(empty);
         } else {
@@ -131,7 +131,7 @@ public class HomeFragment extends Fragment {
                 avatar.setText(firstLetter(item.getCategory()));
                 ViewCompat.setBackgroundTintList(avatar, ColorStateList.valueOf(item.getColorRes()));
                 title.setText(item.getTitle());
-                meta.setText(FormatUtils.formatDate(item.getDate()) + "  •  " + item.getCategory());
+                meta.setText(FormatUtils.formatDate(item.getDate()) + " • " + item.getCategory());
                 amount.setText("-" + FormatUtils.formatCurrency(item.getAmount()));
                 recentTransactions.addView(row);
             }

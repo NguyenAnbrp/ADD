@@ -44,12 +44,12 @@ public class ExpenseRepository {
         if (count > 0) {
             return;
         }
-        addCategory("Ăn uống", color(R.color.danger_red), 1_500_000d);
-        addCategory("Đi lại", color(R.color.warning_yellow), 500_000d);
-        addCategory("Đi chơi", color(R.color.blue_light), 800_000d);
-        addCategory("Nhà & hoá đơn", color(R.color.gray_700), 1_200_000d);
-        addCategory("Mua sắm", color(R.color.blue_600), 1_000_000d);
-        addCategory("Sức khoẻ", color(R.color.teal), 600_000d);
+        addCategory("Food & Drinks", color(R.color.danger_red), 1_500_000d);
+        addCategory("Transport", color(R.color.warning_yellow), 500_000d);
+        addCategory("Entertainment", color(R.color.blue_light), 800_000d);
+        addCategory("Home & Bills", color(R.color.gray_700), 1_200_000d);
+        addCategory("Shopping", color(R.color.blue_600), 1_000_000d);
+        addCategory("Health", color(R.color.teal), 600_000d);
     }
 
     public List<Category> getCategories() {
@@ -101,7 +101,7 @@ public class ExpenseRepository {
         Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(userId)});
         while (cursor.moveToNext()) {
             String title = cursor.getString(0);
-            String category = cursor.isNull(1) ? "Không phân loại" : cursor.getString(1);
+            String category = cursor.isNull(1) ? "Uncategorized" : cursor.getString(1);
             int color = cursor.isNull(2) ? defaultCategoryColor() : cursor.getInt(2);
             double amount = cursor.getDouble(3);
             long dateMillis = cursor.getLong(4);
@@ -179,7 +179,7 @@ public class ExpenseRepository {
         while (cursor.moveToNext()) {
             String title = cursor.getString(0);
             double amount = cursor.getDouble(1);
-            String category = cursor.isNull(2) ? "Không phân loại" : cursor.getString(2);
+            String category = cursor.isNull(2) ? "Uncategorized" : cursor.getString(2);
             long startDate = cursor.getLong(3);
             items.add(new RecurringExpense(title, amount, category, new Date(startDate)));
         }
@@ -219,12 +219,12 @@ public class ExpenseRepository {
         if (userId <= 0) {
             return 0;
         }
-        java.util.Calendar calendar = java.util.Calendar.getInstance();
-        calendar.set(java.util.Calendar.DAY_OF_MONTH, calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH));
-        calendar.set(java.util.Calendar.HOUR_OF_DAY, 23);
-        calendar.set(java.util.Calendar.MINUTE, 59);
-        calendar.set(java.util.Calendar.SECOND, 59);
-        calendar.set(java.util.Calendar.MILLISECOND, 999);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
         long endOfMonth = calendar.getTimeInMillis();
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();

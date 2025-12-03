@@ -47,14 +47,14 @@ public class BudgetFragment extends Fragment {
             R.color.gray_300
     };
     private final String[] colorLabels = new String[]{
-            "Đỏ",
-            "Xanh dương",
-            "Vàng",
-            "Xanh lá",
-            "Xanh ngọc",
-            "Xám đậm",
-            "Xanh nhạt",
-            "Xám nhạt"
+            "Red",
+            "Blue",
+            "Yellow",
+            "Green",
+            "Teal",
+            "Dark gray",
+            "Light blue",
+            "Light gray"
     };
 
     @Nullable
@@ -88,7 +88,7 @@ public class BudgetFragment extends Fragment {
         List<BudgetCategory> budgets = repository.getBudgets();
         if (budgets.isEmpty()) {
             TextView empty = new TextView(context);
-            empty.setText("Chưa có danh mục chi tiêu. Thêm danh mục mới để theo dõi ngân sách.");
+            empty.setText("No budget categories yet. Add one to start tracking.");
             empty.setTextColor(getResources().getColor(R.color.gray_700));
             empty.setPadding(16, 16, 16, 16);
             budgetList.addView(empty);
@@ -110,10 +110,10 @@ public class BudgetFragment extends Fragment {
             if (category.getLimit() != null && category.getLimit() > 0) {
                 int percent = Math.min(100, (int) ((category.getSpent() / category.getLimit()) * 100));
                 progressBar.setProgress(percent);
-                limitText.setText("Đã dùng " + percent + "% / " + FormatUtils.formatCurrency(category.getLimit()));
+                limitText.setText("Used " + percent + "% / " + FormatUtils.formatCurrency(category.getLimit()));
             } else {
                 progressBar.setProgress(0);
-                limitText.setText("Chưa đặt hạn mức");
+                limitText.setText("No limit set");
             }
 
             budgetList.addView(item);
@@ -131,13 +131,13 @@ public class BudgetFragment extends Fragment {
         colorSpinner.setAdapter(adapter);
 
         new AlertDialog.Builder(requireContext())
-                .setTitle("Thêm danh mục")
+                .setTitle("Add category")
                 .setView(dialogView)
-                .setPositiveButton("Lưu", (dialog, which) -> {
+                .setPositiveButton("Save", (dialog, which) -> {
                     String name = nameInput.getText().toString().trim();
                     String limitText = limitInput.getText().toString().trim();
                     if (name.isEmpty()) {
-                        Toast.makeText(requireContext(), "Tên danh mục không được để trống", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Category name cannot be empty", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     Double limit = null;
@@ -145,7 +145,7 @@ public class BudgetFragment extends Fragment {
                         try {
                             limit = Double.parseDouble(limitText);
                         } catch (NumberFormatException e) {
-                            Toast.makeText(requireContext(), "Hạn mức không hợp lệ", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Invalid limit amount", Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
@@ -153,13 +153,13 @@ public class BudgetFragment extends Fragment {
                     int color = ContextCompat.getColor(requireContext(), colorRes);
                     long result = repository.addCategory(name, color, limit);
                     if (result == -1) {
-                        Toast.makeText(requireContext(), "Danh mục đã tồn tại", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Category already exists", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(requireContext(), "Đã lưu danh mục", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Category saved", Toast.LENGTH_SHORT).show();
                     }
                     renderBudgets();
                 })
-                .setNegativeButton("Hủy", null)
+                .setNegativeButton("Cancel", null)
                 .show();
     }
 

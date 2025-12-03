@@ -8,12 +8,12 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +27,7 @@ import com.example.asm_app.repositories.ExpenseRepository;
 import com.example.asm_app.util.FormatUtils;
 import com.example.asm_app.util.SessionManager;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.Locale;
 
 public class TransactionsFragment extends Fragment {
 
-    private static final String ALL_LABEL = "Tất cả";
+    private static final String ALL_LABEL = "All";
 
     private final List<TextView> chipViews = new ArrayList<>();
     private String selectedCategory = ALL_LABEL;
@@ -163,7 +164,7 @@ public class TransactionsFragment extends Fragment {
 
         if (sourceExpenses.isEmpty()) {
             TextView empty = new TextView(context);
-            empty.setText("Chưa có giao dịch. Thêm giao dịch mới để bắt đầu theo dõi.");
+            empty.setText("No transactions yet. Add one to start tracking.");
             empty.setTextColor(getResources().getColor(R.color.gray_700));
             empty.setPadding(16, 16, 16, 16);
             transactionList.addView(empty);
@@ -185,7 +186,7 @@ public class TransactionsFragment extends Fragment {
             avatar.setText(firstLetter(item.getCategory()));
             ViewCompat.setBackgroundTintList(avatar, android.content.res.ColorStateList.valueOf(item.getColorRes()));
             title.setText(item.getTitle());
-            meta.setText(FormatUtils.formatDate(item.getDate()) + "  •  " + item.getCategory());
+            meta.setText(FormatUtils.formatDate(item.getDate()) + " • " + item.getCategory());
             amount.setText("-" + FormatUtils.formatCurrency(item.getAmount()));
             transactionList.addView(row);
         }
@@ -199,7 +200,7 @@ public class TransactionsFragment extends Fragment {
         Spinner categorySpinner = dialogView.findViewById(R.id.transactionCategorySpinner);
 
         List<String> labels = new ArrayList<>();
-        labels.add("Không phân loại");
+        labels.add("Uncategorized");
         for (Category category : categories) {
             labels.add(category.getName());
         }
@@ -212,30 +213,30 @@ public class TransactionsFragment extends Fragment {
         dateInput.setOnClickListener(v -> showDatePicker(calendar, dateInput));
 
         new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Thêm giao dịch")
+                .setTitle("Add transaction")
                 .setView(dialogView)
-                .setPositiveButton("Lưu", (dialog, which) -> {
+                .setPositiveButton("Save", (dialog, which) -> {
                     String title = titleInput.getText().toString().trim();
                     String amountText = amountInput.getText().toString().trim();
                     if (title.isEmpty() || amountText.isEmpty()) {
-                        Toast.makeText(requireContext(), "Nhập đầy đủ tên và số tiền", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Enter both title and amount", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     double amount;
                     try {
                         amount = Double.parseDouble(amountText);
                     } catch (NumberFormatException e) {
-                        Toast.makeText(requireContext(), "Số tiền không hợp lệ", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Invalid amount", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     Calendar chosen = Calendar.getInstance();
                     chosen.setTime(parseDate(dateInput.getText().toString()));
                     long categoryId = resolveCategoryId(categorySpinner.getSelectedItemPosition());
                     repository.addExpense(title, categoryId, amount, chosen.getTime());
-                    Toast.makeText(requireContext(), "Đã thêm giao dịch", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Transaction added", Toast.LENGTH_SHORT).show();
                     loadData();
                 })
-                .setNegativeButton("Hủy", null)
+                .setNegativeButton("Cancel", null)
                 .show();
     }
 
@@ -260,7 +261,7 @@ public class TransactionsFragment extends Fragment {
 
     private java.util.Date parseDate(String value) {
         try {
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             return sdf.parse(value);
         } catch (Exception e) {
             return new java.util.Date();

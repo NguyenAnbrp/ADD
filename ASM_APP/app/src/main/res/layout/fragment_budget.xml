@@ -24,7 +24,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Ngân Sách"
+                android:text="Budget"
                 android:textColor="@color/navy_900"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -39,7 +39,7 @@
             android:paddingTop="6dp"
             android:paddingRight="10dp"
             android:paddingBottom="6dp"
-            android:text="tháng 12 năm 2025"
+            android:text="Month / Year"
             android:textColor="@color/gray_700"
             android:textSize="12sp" />
 
@@ -51,7 +51,7 @@
             android:background="@drawable/bg_button_primary"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:text="+ Thêm danh mục"
+            android:text="+ Add category"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="14sp" />

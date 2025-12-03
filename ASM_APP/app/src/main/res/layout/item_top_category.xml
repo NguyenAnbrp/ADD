@@ -18,7 +18,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Ăn uống"
+        android:text="Food"
         android:textColor="@color/gray_700"
         android:textSize="14sp" />
 
@@ -31,7 +31,7 @@
         android:paddingTop="6dp"
         android:paddingRight="10dp"
         android:paddingBottom="6dp"
-        android:text="450.000 đ"
+        android:text="0 VND"
         android:textColor="@color/navy_900"
         android:textSize="13sp"
         android:textStyle="bold" />
