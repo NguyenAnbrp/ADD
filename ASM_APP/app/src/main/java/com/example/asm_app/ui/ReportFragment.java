@@ -13,6 +13,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
 
 import com.example.asm_app.LoginActivity;
 import com.example.asm_app.R;
@@ -164,28 +165,30 @@ public class ReportFragment extends Fragment {
         // Remaining slice
         if (remaining > 0) {
             double percent = (remaining / totalForPercent) * 100.0;
-            segments.add(new PieChartView.Segment((float) remaining, getResources().getColor(R.color.success_green)));
-            addLegendItem(getString(R.string.label_remaining) + " (" + Math.round(percent) + "%)", remaining, R.color.success_green);
+            int remainingColor = ContextCompat.getColor(requireContext(), R.color.success_green);
+            segments.add(new PieChartView.Segment((float) remaining, remainingColor));
+            addLegendItem(getString(R.string.label_remaining) + " (" + Math.round(percent) + "%)", remaining, remainingColor);
         }
 
         if (segments.isEmpty()) {
             pieChartView.setSegments(new ArrayList<>());
-            addLegendItem("Chưa có dữ liệu", 0, R.color.gray_300);
+            int gray = ContextCompat.getColor(requireContext(), R.color.gray_300);
+            addLegendItem("Chưa có dữ liệu", 0, gray);
         } else {
             pieChartView.setSegments(segments);
         }
     }
 
-    private void addLegendItem(String label, double amount, int colorRes) {
+    private void addLegendItem(String label, double amount, int colorInt) {
         View item = LayoutInflater.from(requireContext()).inflate(R.layout.item_pie_legend, legendContainer, false);
         View dot = item.findViewById(R.id.legendDot);
         TextView title = item.findViewById(R.id.legendLabel);
         TextView value = item.findViewById(R.id.legendValue);
 
         if (dot.getBackground() != null) {
-            dot.getBackground().setTint(getResources().getColor(colorRes));
+            dot.getBackground().setTint(colorInt);
         } else {
-            dot.setBackgroundColor(getResources().getColor(colorRes));
+            dot.setBackgroundColor(colorInt);
         }
         title.setText(label);
         value.setText(FormatUtils.formatCurrency(amount));
