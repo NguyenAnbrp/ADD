@@ -214,6 +214,29 @@ public class ExpenseRepository {
         db.delete("categories", "userId = ?", new String[]{String.valueOf(userId)});
     }
 
+    public double getRecurringPlannedForCurrentMonth() {
+        if (userId <= 0) {
+            return 0;
+        }
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        calendar.set(java.util.Calendar.DAY_OF_MONTH, calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH));
+        calendar.set(java.util.Calendar.HOUR_OF_DAY, 23);
+        calendar.set(java.util.Calendar.MINUTE, 59);
+        calendar.set(java.util.Calendar.SECOND, 59);
+        calendar.set(java.util.Calendar.MILLISECOND, 999);
+        long endOfMonth = calendar.getTimeInMillis();
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT IFNULL(SUM(amount), 0) FROM recurring_expenses WHERE userId = ? AND startDateMillis <= ?",
+                new String[]{String.valueOf(userId), String.valueOf(endOfMonth)});
+        double total = 0;
+        if (cursor.moveToFirst()) {
+            total = cursor.getDouble(0);
+        }
+        cursor.close();
+        return total;
+    }
+
     private int defaultCategoryColor() {
         return ContextCompat.getColor(appContext, R.color.gray_500);
     }
