@@ -272,6 +272,12 @@ public class BudgetFragment extends Fragment {
                 .setTitle("Delete category")
                 .setMessage("Are you sure you want to delete \"" + category.getName() + "\"?\n\nAll expenses in this category will become uncategorized.")
                 .setPositiveButton("Delete", (dialog, which) -> {
+                    if (repository.hasExpensesForCategory(category.getId())) {
+                        Toast.makeText(requireContext(),
+                                "Cannot delete. There are transactions in this category.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     boolean success = repository.deleteCategory(category.getId());
                     if (success) {
                         Toast.makeText(requireContext(), "Category deleted", Toast.LENGTH_SHORT).show();
