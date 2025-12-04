@@ -5,11 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,14 +16,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.asm_app.R;
-import com.example.asm_app.model.Category;
 import com.example.asm_app.model.RecurringExpense;
 import com.example.asm_app.repositories.ExpenseRepository;
 import com.example.asm_app.util.FormatUtils;
 import com.example.asm_app.util.SessionManager;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -35,11 +31,9 @@ public class RecurringFragment extends Fragment {
     private EditText dateInput;
     private EditText titleInput;
     private EditText amountInput;
-    private Spinner categorySpinner;
     private LinearLayout recurringList;
     private ExpenseRepository repository;
     private SessionManager sessionManager;
-    private final List<Category> categories = new ArrayList<>();
 
     @Nullable
     @Override
@@ -57,18 +51,14 @@ public class RecurringFragment extends Fragment {
         super.onResume();
         repository.ensureDefaultCategoriesIfEmpty();
         renderRecurringList();
-        loadCategories();
     }
 
     private void setup(View view) {
-        categorySpinner = view.findViewById(R.id.recurringCategorySpinner);
         Button addRecurringBtn = view.findViewById(R.id.addRecurringBtn);
         recurringList = view.findViewById(R.id.recurringList);
         dateInput = view.findViewById(R.id.recurringDateInput);
         titleInput = view.findViewById(R.id.recurringTitleInput);
         amountInput = view.findViewById(R.id.recurringAmountInput);
-
-        loadCategories();
 
         Calendar calendar = Calendar.getInstance();
         dateInput.setText(FormatUtils.formatDate(calendar.getTime()));
@@ -77,19 +67,6 @@ public class RecurringFragment extends Fragment {
         addRecurringBtn.setOnClickListener(v -> saveRecurring());
 
         renderRecurringList();
-    }
-
-    private void loadCategories() {
-        categories.clear();
-        categories.addAll(repository.getCategories());
-        List<String> labels = new ArrayList<>();
-        labels.add("Uncategorized");
-        for (Category category : categories) {
-            labels.add(category.getName());
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, labels);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        categorySpinner.setAdapter(adapter);
     }
 
     private void saveRecurring() {
@@ -108,7 +85,7 @@ public class RecurringFragment extends Fragment {
         }
         Calendar chosen = Calendar.getInstance();
         chosen.setTime(parseDate(dateInput.getText().toString()));
-        long categoryId = selectedCategoryId();
+        long categoryId = -1;
         repository.addRecurring(title, amount, categoryId, chosen.getTime());
         Toast.makeText(requireContext(), "Recurring expense saved", Toast.LENGTH_SHORT).show();
         titleInput.setText("");
@@ -153,14 +130,6 @@ public class RecurringFragment extends Fragment {
             date.setText("Starts " + FormatUtils.formatDate(item.getStartDate()));
             recurringList.addView(row);
         }
-    }
-
-    private long selectedCategoryId() {
-        int position = categorySpinner.getSelectedItemPosition();
-        if (position <= 0 || position - 1 >= categories.size()) {
-            return -1;
-        }
-        return categories.get(position - 1).getId();
     }
 
     private java.util.Date parseDate(String value) {

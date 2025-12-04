@@ -95,14 +95,6 @@
                 android:textColor="@color/navy_900"
                 android:textColorHint="@color/gray_500" />
 
-            <Spinner
-                android:id="@+id/recurringCategorySpinner"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_input"
-                android:padding="12dp" />
-
             <EditText
                 android:id="@+id/recurringDateInput"
                 android:layout_width="match_parent"

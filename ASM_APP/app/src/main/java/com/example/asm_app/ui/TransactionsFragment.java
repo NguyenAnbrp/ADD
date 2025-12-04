@@ -289,13 +289,21 @@ public class TransactionsFragment extends Fragment {
         Spinner categorySpinner = dialogView.findViewById(R.id.transactionCategorySpinner);
 
         List<String> labels = new ArrayList<>();
-        labels.add("Uncategorized");
-        for (Category category : categories) {
-            labels.add(category.getName());
+        boolean hasCategories = !categories.isEmpty();
+        if (hasCategories) {
+            labels.add("Select category");
+            for (Category category : categories) {
+                labels.add(category.getName());
+            }
+        } else {
+            labels.add("No categories available");
         }
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, labels);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner.setAdapter(adapter);
+        categorySpinner.setEnabled(hasCategories);
+        categorySpinner.setSelection(0);
 
         Calendar calendar = Calendar.getInstance();
         dateInput.setText(FormatUtils.formatDate(calendar.getTime()));
@@ -320,7 +328,15 @@ public class TransactionsFragment extends Fragment {
                     }
                     Calendar chosen = Calendar.getInstance();
                     chosen.setTime(parseDate(dateInput.getText().toString()));
+                    if (!categorySpinner.isEnabled()) {
+                        Toast.makeText(requireContext(), "Add a category first", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     long categoryId = resolveCategoryId(categorySpinner.getSelectedItemPosition());
+                    if (categoryId <= 0) {
+                        Toast.makeText(requireContext(), "Please select a category", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     repository.addExpense(title, categoryId, amount, chosen.getTime());
                     Toast.makeText(requireContext(), "Transaction added", Toast.LENGTH_SHORT).show();
                     // Refresh data to show new transaction
@@ -343,10 +359,15 @@ public class TransactionsFragment extends Fragment {
     }
 
     private long resolveCategoryId(int position) {
-        if (position <= 0 || position - 1 >= categories.size()) {
+        if (categories.isEmpty()) {
             return -1;
         }
-        return categories.get(position - 1).getId();
+        // First position is placeholder "Select category"
+        int index = position - 1;
+        if (index < 0 || index >= categories.size()) {
+            return -1;
+        }
+        return categories.get(index).getId();
     }
 
     private java.util.Date parseDate(String value) {

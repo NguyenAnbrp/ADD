@@ -17,7 +17,9 @@ import com.example.asm_app.model.RecurringExpense;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ExpenseRepository {
     private final SQLiteDbHelper dbHelper;
@@ -185,14 +187,36 @@ public class ExpenseRepository {
         // Check if each recurring expense has been added for this month
         for (RecurringExpenseData recurring : recurringList) {
             // Check if this recurring expense already exists in this month
+            // Check by title, amount, and category to ensure exact match
             String checkSql = "SELECT COUNT(*) FROM expenses " +
-                    "WHERE userId = ? AND title = ? AND dateMillis BETWEEN ? AND ?";
-            Cursor checkCursor = db.rawQuery(checkSql, new String[]{
-                    String.valueOf(userId),
-                    recurring.title,
-                    String.valueOf(monthStartMillis),
-                    String.valueOf(monthEndMillis)
-            });
+                    "WHERE userId = ? AND title = ? AND amount = ? AND dateMillis BETWEEN ? AND ?";
+            String[] checkArgs;
+            if (recurring.categoryId > 0) {
+                // If category is set, also check categoryId
+                checkSql = "SELECT COUNT(*) FROM expenses " +
+                        "WHERE userId = ? AND title = ? AND amount = ? AND categoryId = ? AND dateMillis BETWEEN ? AND ?";
+                checkArgs = new String[]{
+                        String.valueOf(userId),
+                        recurring.title,
+                        String.valueOf(recurring.amount),
+                        String.valueOf(recurring.categoryId),
+                        String.valueOf(monthStartMillis),
+                        String.valueOf(monthEndMillis)
+                };
+            } else {
+                // If no category, check that categoryId is NULL
+                checkSql = "SELECT COUNT(*) FROM expenses " +
+                        "WHERE userId = ? AND title = ? AND amount = ? AND categoryId IS NULL AND dateMillis BETWEEN ? AND ?";
+                checkArgs = new String[]{
+                        String.valueOf(userId),
+                        recurring.title,
+                        String.valueOf(recurring.amount),
+                        String.valueOf(monthStartMillis),
+                        String.valueOf(monthEndMillis)
+                };
+            }
+            
+            Cursor checkCursor = db.rawQuery(checkSql, checkArgs);
             boolean exists = false;
             if (checkCursor.moveToFirst()) {
                 exists = checkCursor.getLong(0) > 0;
@@ -210,7 +234,7 @@ public class ExpenseRepository {
                 expenseDate.set(Calendar.SECOND, 0);
                 expenseDate.set(Calendar.MILLISECOND, 0);
                 
-                addExpense(recurring.title, recurring.categoryId, recurring.amount, expenseDate.getTime());
+                addExpense(recurring.title, recurring.categoryId, recurring.amount, expenseDate.getTime(), recurring.id);
             }
         }
     }
@@ -236,7 +260,9 @@ public class ExpenseRepository {
             return 0;
         }
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT IFNULL(SUM(amount), 0) FROM expenses WHERE userId = ?", new String[]{String.valueOf(userId)});
+        // Only count expenses that are NOT from recurring_expenses (recurringExpenseId IS NULL)
+        // This prevents double counting since recurring expenses are already counted separately
+        Cursor cursor = db.rawQuery("SELECT IFNULL(SUM(amount), 0) FROM expenses WHERE userId = ? AND recurringExpenseId IS NULL", new String[]{String.valueOf(userId)});
         double total = 0;
         if (cursor.moveToFirst()) {
             total = cursor.getDouble(0);
@@ -251,8 +277,10 @@ public class ExpenseRepository {
             return items;
         }
         SQLiteDatabase db = dbHelper.getReadableDatabase();
+        // Only count expenses that are NOT from recurring_expenses (recurringExpenseId IS NULL)
+        // This prevents double counting since recurring expenses are already counted separately
         String sql = "SELECT c.id, c.name, c.color, c.limitAmount, IFNULL(SUM(e.amount), 0) AS spent " +
-                "FROM categories c LEFT JOIN expenses e ON e.categoryId = c.id " +
+                "FROM categories c LEFT JOIN expenses e ON e.categoryId = c.id AND e.recurringExpenseId IS NULL " +
                 "WHERE c.userId = ? " +
                 "GROUP BY c.id, c.name, c.color, c.limitAmount " +
                 "ORDER BY spent DESC";
@@ -270,6 +298,10 @@ public class ExpenseRepository {
     }
 
     public void addExpense(String title, long categoryId, double amount, Date date) {
+        addExpense(title, categoryId, amount, date, -1);
+    }
+
+    public void addExpense(String title, long categoryId, double amount, Date date, long recurringExpenseId) {
         if (userId <= 0) {
             return;
         }
@@ -284,6 +316,11 @@ public class ExpenseRepository {
         }
         values.put("amount", amount);
         values.put("dateMillis", date.getTime());
+        if (recurringExpenseId > 0) {
+            values.put("recurringExpenseId", recurringExpenseId);
+        } else {
+            values.putNull("recurringExpenseId");
+        }
         db.insert("expenses", null, values);
     }
 
@@ -346,11 +383,31 @@ public class ExpenseRepository {
         if (userId <= 0 || categoryId <= 0) {
             return false;
         }
+        if (hasExpensesForCategory(categoryId)) {
+            return false;
+        }
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         // Foreign key constraints will handle related expenses (SET NULL)
         int rowsAffected = db.delete("categories", "id = ? AND userId = ?", 
                 new String[]{String.valueOf(categoryId), String.valueOf(userId)});
         return rowsAffected > 0;
+    }
+
+    public boolean hasExpensesForCategory(long categoryId) {
+        if (userId <= 0 || categoryId <= 0) {
+            return false;
+        }
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT COUNT(*) FROM expenses WHERE userId = ? AND categoryId = ?",
+                new String[]{String.valueOf(userId), String.valueOf(categoryId)}
+        );
+        boolean hasExpenses = false;
+        if (cursor.moveToFirst()) {
+            hasExpenses = cursor.getLong(0) > 0;
+        }
+        cursor.close();
+        return hasExpenses;
     }
 
     public void deleteAllUserData() {
@@ -406,7 +463,9 @@ public class ExpenseRepository {
             return 0;
         }
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT IFNULL(SUM(amount),0) FROM expenses WHERE userId = ? AND dateMillis BETWEEN ? AND ?",
+        // Only count expenses that are NOT from recurring_expenses (recurringExpenseId IS NULL)
+        // This prevents double counting since recurring expenses are already counted separately
+        Cursor cursor = db.rawQuery("SELECT IFNULL(SUM(amount),0) FROM expenses WHERE userId = ? AND dateMillis BETWEEN ? AND ? AND recurringExpenseId IS NULL",
                 new String[]{String.valueOf(userId), String.valueOf(startMillis), String.valueOf(endMillis)});
         double total = 0;
         if (cursor.moveToFirst()) {
@@ -435,9 +494,11 @@ public class ExpenseRepository {
         List<CategorySpend> items = new ArrayList<>();
         if (userId <= 0) return items;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        Map<Long, CategorySpendAccumulator> accumulatorMap = new HashMap<>();
         String sql = "SELECT c.id, c.name, c.color, c.limitAmount, IFNULL(SUM(e.amount),0) " +
                 "FROM categories c " +
-                "LEFT JOIN expenses e ON e.categoryId = c.id AND e.dateMillis BETWEEN ? AND ? " +
+                "LEFT JOIN expenses e ON e.categoryId = c.id AND e.dateMillis BETWEEN ? AND ? AND e.recurringExpenseId IS NULL " +
                 "WHERE c.userId = ? " +
                 "GROUP BY c.id, c.name, c.color, c.limitAmount";
         Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(startMillis), String.valueOf(endMillis), String.valueOf(userId)});
@@ -447,9 +508,55 @@ public class ExpenseRepository {
             int color = cursor.getInt(2);
             Double limit = cursor.isNull(3) ? null : cursor.getDouble(3);
             double spent = cursor.getDouble(4);
-            items.add(new CategorySpend(id, name, color, limit, spent));
+            CategorySpendAccumulator acc = new CategorySpendAccumulator(id, name, color, limit);
+            acc.add(spent);
+            accumulatorMap.put(id, acc);
         }
         cursor.close();
+
+        double uncategorizedRecurring = 0;
+        String recurringSql = "SELECT categoryId, IFNULL(SUM(amount),0) FROM recurring_expenses " +
+                "WHERE userId = ? AND startDateMillis BETWEEN ? AND ? " +
+                "GROUP BY categoryId";
+        Cursor recurringCursor = db.rawQuery(recurringSql, new String[]{
+                String.valueOf(userId),
+                String.valueOf(startMillis),
+                String.valueOf(endMillis)
+        });
+        while (recurringCursor.moveToNext()) {
+            double amount = recurringCursor.getDouble(1);
+            if (amount <= 0) continue;
+            if (!recurringCursor.isNull(0)) {
+                long categoryId = recurringCursor.getLong(0);
+                CategorySpendAccumulator acc = accumulatorMap.get(categoryId);
+                if (acc == null) {
+                    acc = new CategorySpendAccumulator(
+                            categoryId,
+                            "Recurring",
+                            defaultCategoryColor(),
+                            null
+                    );
+                    accumulatorMap.put(categoryId, acc);
+                }
+                acc.add(amount);
+            } else {
+                uncategorizedRecurring += amount;
+            }
+        }
+        recurringCursor.close();
+
+        for (CategorySpendAccumulator acc : accumulatorMap.values()) {
+            items.add(acc.toCategorySpend());
+        }
+        if (uncategorizedRecurring > 0) {
+            items.add(new CategorySpend(
+                    -1,
+                    "Recurring (no category)",
+                    defaultCategoryColor(),
+                    null,
+                    uncategorizedRecurring
+            ));
+        }
         return items;
     }
 
@@ -485,8 +592,10 @@ public class ExpenseRepository {
         List<String> exceeded = new ArrayList<>();
         if (userId <= 0) return exceeded;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
+        // Only count expenses that are NOT from recurring_expenses (recurringExpenseId IS NULL)
+        // This prevents double counting since recurring expenses are already counted separately
         String sql = "SELECT c.name, c.limitAmount, IFNULL(SUM(e.amount),0) AS spent " +
-                "FROM categories c LEFT JOIN expenses e ON e.categoryId = c.id AND e.dateMillis BETWEEN ? AND ? " +
+                "FROM categories c LEFT JOIN expenses e ON e.categoryId = c.id AND e.dateMillis BETWEEN ? AND ? AND e.recurringExpenseId IS NULL " +
                 "WHERE c.userId = ? AND c.limitAmount IS NOT NULL AND c.limitAmount > 0 " +
                 "GROUP BY c.id, c.name, c.limitAmount " +
                 "HAVING spent > c.limitAmount";
@@ -519,6 +628,30 @@ public class ExpenseRepository {
             this.color = color;
             this.limit = limit;
             this.spent = spent;
+        }
+    }
+
+    private static class CategorySpendAccumulator {
+        final long id;
+        final String name;
+        final int color;
+        final Double limit;
+        double spent;
+
+        CategorySpendAccumulator(long id, String name, int color, Double limit) {
+            this.id = id;
+            this.name = name;
+            this.color = color;
+            this.limit = limit;
+            this.spent = 0;
+        }
+
+        void add(double amount) {
+            this.spent += amount;
+        }
+
+        CategorySpend toCategorySpend() {
+            return new CategorySpend(id, name, color, limit, spent);
         }
     }
 }
