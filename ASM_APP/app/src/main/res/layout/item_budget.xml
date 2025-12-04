@@ -48,19 +48,36 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/budgetAction"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_unselected"
-            android:paddingLeft="10dp"
-            android:paddingTop="6dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="6dp"
-            android:text="+ Set limit"
-            android:textColor="@color/navy_900"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/budgetAction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip_unselected"
+                android:paddingLeft="10dp"
+                android:paddingTop="6dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="6dp"
+                android:text="+ Set limit"
+                android:textColor="@color/navy_900"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/budgetDeleteBtn"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Delete category"
+                android:src="@drawable/ic_delete"
+                android:padding="6dp" />
+        </LinearLayout>
     </LinearLayout>
 
     <TextView

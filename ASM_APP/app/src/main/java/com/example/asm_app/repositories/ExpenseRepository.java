@@ -44,12 +44,12 @@ public class ExpenseRepository {
         if (count > 0) {
             return;
         }
-        addCategory("Food & Drinks", color(R.color.danger_red), 1_500_000d);
-        addCategory("Transport", color(R.color.warning_yellow), 500_000d);
-        addCategory("Entertainment", color(R.color.blue_light), 800_000d);
-        addCategory("Home & Bills", color(R.color.gray_700), 1_200_000d);
-        addCategory("Shopping", color(R.color.blue_600), 1_000_000d);
-        addCategory("Health", color(R.color.teal), 600_000d);
+//        addCategory("Food & Drinks", color(R.color.danger_red), null);
+//        addCategory("Transport", color(R.color.warning_yellow), null);
+//        addCategory("Entertainment", color(R.color.blue_light), null);
+//        addCategory("Home & Bills", color(R.color.gray_700), null);
+//        addCategory("Shopping", color(R.color.blue_600), null);
+//        addCategory("Health", color(R.color.teal), null);
     }
 
     public List<Category> getCategories() {
@@ -111,6 +111,126 @@ public class ExpenseRepository {
         return items;
     }
 
+    public List<Expense> getExpensesByMonth(int year, int month) {
+        List<Expense> items = new ArrayList<>();
+        if (userId <= 0) {
+            return items;
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long startMillis = cal.getTimeInMillis();
+        
+        cal.add(Calendar.MONTH, 1);
+        cal.add(Calendar.MILLISECOND, -1);
+        long endMillis = cal.getTimeInMillis();
+        
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sql = "SELECT e.title, c.name, c.color, e.amount, e.dateMillis " +
+                "FROM expenses e LEFT JOIN categories c ON e.categoryId = c.id " +
+                "WHERE e.userId = ? AND e.dateMillis BETWEEN ? AND ? ORDER BY e.dateMillis DESC";
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(userId), String.valueOf(startMillis), String.valueOf(endMillis)});
+        while (cursor.moveToNext()) {
+            String title = cursor.getString(0);
+            String category = cursor.isNull(1) ? "Uncategorized" : cursor.getString(1);
+            int color = cursor.isNull(2) ? defaultCategoryColor() : cursor.getInt(2);
+            double amount = cursor.getDouble(3);
+            long dateMillis = cursor.getLong(4);
+            items.add(new Expense(title, category, amount, new Date(dateMillis), color));
+        }
+        cursor.close();
+        return items;
+    }
+
+    public void processRecurringExpensesForMonth(int year, int month) {
+        if (userId <= 0) {
+            return;
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long monthStartMillis = cal.getTimeInMillis();
+        
+        cal.add(Calendar.MONTH, 1);
+        cal.add(Calendar.MILLISECOND, -1);
+        long monthEndMillis = cal.getTimeInMillis();
+        
+        // Get all recurring expenses that should be active in this month
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sql = "SELECT id, title, amount, categoryId, startDateMillis FROM recurring_expenses " +
+                "WHERE userId = ? AND startDateMillis <= ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(userId), String.valueOf(monthEndMillis)});
+        
+        List<RecurringExpenseData> recurringList = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            long recurringId = cursor.getLong(0);
+            String title = cursor.getString(1);
+            double amount = cursor.getDouble(2);
+            long categoryId = cursor.isNull(3) ? -1 : cursor.getLong(3);
+            long startDateMillis = cursor.getLong(4);
+            recurringList.add(new RecurringExpenseData(recurringId, title, amount, categoryId, startDateMillis));
+        }
+        cursor.close();
+        
+        // Check if each recurring expense has been added for this month
+        for (RecurringExpenseData recurring : recurringList) {
+            // Check if this recurring expense already exists in this month
+            String checkSql = "SELECT COUNT(*) FROM expenses " +
+                    "WHERE userId = ? AND title = ? AND dateMillis BETWEEN ? AND ?";
+            Cursor checkCursor = db.rawQuery(checkSql, new String[]{
+                    String.valueOf(userId),
+                    recurring.title,
+                    String.valueOf(monthStartMillis),
+                    String.valueOf(monthEndMillis)
+            });
+            boolean exists = false;
+            if (checkCursor.moveToFirst()) {
+                exists = checkCursor.getLong(0) > 0;
+            }
+            checkCursor.close();
+            
+            // If not exists, add it on the first day of the month
+            if (!exists) {
+                Calendar expenseDate = Calendar.getInstance();
+                expenseDate.set(Calendar.YEAR, year);
+                expenseDate.set(Calendar.MONTH, month);
+                expenseDate.set(Calendar.DAY_OF_MONTH, 1);
+                expenseDate.set(Calendar.HOUR_OF_DAY, 0);
+                expenseDate.set(Calendar.MINUTE, 0);
+                expenseDate.set(Calendar.SECOND, 0);
+                expenseDate.set(Calendar.MILLISECOND, 0);
+                
+                addExpense(recurring.title, recurring.categoryId, recurring.amount, expenseDate.getTime());
+            }
+        }
+    }
+    
+    private static class RecurringExpenseData {
+        final long id;
+        final String title;
+        final double amount;
+        final long categoryId;
+        final long startDateMillis;
+        
+        RecurringExpenseData(long id, String title, double amount, long categoryId, long startDateMillis) {
+            this.id = id;
+            this.title = title;
+            this.amount = amount;
+            this.categoryId = categoryId;
+            this.startDateMillis = startDateMillis;
+        }
+    }
+
     public double getTotalExpenses() {
         if (userId <= 0) {
             return 0;
@@ -131,18 +251,19 @@ public class ExpenseRepository {
             return items;
         }
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String sql = "SELECT c.name, c.color, c.limitAmount, IFNULL(SUM(e.amount), 0) AS spent " +
+        String sql = "SELECT c.id, c.name, c.color, c.limitAmount, IFNULL(SUM(e.amount), 0) AS spent " +
                 "FROM categories c LEFT JOIN expenses e ON e.categoryId = c.id " +
                 "WHERE c.userId = ? " +
                 "GROUP BY c.id, c.name, c.color, c.limitAmount " +
                 "ORDER BY spent DESC";
         Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(userId)});
         while (cursor.moveToNext()) {
-            String name = cursor.getString(0);
-            int color = cursor.getInt(1);
-            Double limit = cursor.isNull(2) ? null : cursor.getDouble(2);
-            double spent = cursor.getDouble(3);
-            items.add(new BudgetCategory(name, spent, limit, color));
+            long id = cursor.getLong(0);
+            String name = cursor.getString(1);
+            int color = cursor.getInt(2);
+            Double limit = cursor.isNull(3) ? null : cursor.getDouble(3);
+            double spent = cursor.getDouble(4);
+            items.add(new BudgetCategory(id, name, spent, limit, color));
         }
         cursor.close();
         return items;
@@ -203,6 +324,33 @@ public class ExpenseRepository {
         }
         values.put("startDateMillis", startDate.getTime());
         db.insert("recurring_expenses", null, values);
+    }
+
+    public boolean updateCategoryLimit(long categoryId, Double limit) {
+        if (userId <= 0 || categoryId <= 0) {
+            return false;
+        }
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        if (limit != null && limit > 0) {
+            values.put("limitAmount", limit);
+        } else {
+            values.putNull("limitAmount");
+        }
+        int rowsAffected = db.update("categories", values, "id = ? AND userId = ?", 
+                new String[]{String.valueOf(categoryId), String.valueOf(userId)});
+        return rowsAffected > 0;
+    }
+
+    public boolean deleteCategory(long categoryId) {
+        if (userId <= 0 || categoryId <= 0) {
+            return false;
+        }
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // Foreign key constraints will handle related expenses (SET NULL)
+        int rowsAffected = db.delete("categories", "id = ? AND userId = ?", 
+                new String[]{String.valueOf(categoryId), String.valueOf(userId)});
+        return rowsAffected > 0;
     }
 
     public void deleteAllUserData() {

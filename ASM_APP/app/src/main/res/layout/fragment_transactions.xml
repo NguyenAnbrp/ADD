@@ -32,6 +32,22 @@
                     android:textSize="22sp"
                     android:textStyle="bold" />
 
+                <TextView
+                    android:id="@+id/monthSelector"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_chip_unselected"
+                    android:paddingLeft="12dp"
+                    android:paddingTop="8dp"
+                    android:paddingRight="12dp"
+                    android:paddingBottom="8dp"
+                    android:text="01/2024"
+                    android:textColor="@color/navy_900"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true" />
+
             </LinearLayout>
 
             <EditText

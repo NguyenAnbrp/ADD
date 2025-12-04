@@ -46,6 +46,8 @@ public class TransactionsFragment extends Fragment {
     private final List<Category> categories = new ArrayList<>();
     private ExpenseRepository repository;
     private SessionManager sessionManager;
+    private TextView monthSelector;
+    private Calendar selectedMonth;
 
     @Nullable
     @Override
@@ -62,6 +64,14 @@ public class TransactionsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         repository.ensureDefaultCategoriesIfEmpty();
+        // Initialize selected month if not set
+        if (selectedMonth == null) {
+            selectedMonth = Calendar.getInstance();
+            selectedMonth.set(Calendar.DAY_OF_MONTH, 1);
+            if (monthSelector != null) {
+                updateMonthSelectorText();
+            }
+        }
         loadData();
     }
 
@@ -70,6 +80,16 @@ public class TransactionsFragment extends Fragment {
         categoryChipContainer = view.findViewById(R.id.categoryChips);
         transactionList = view.findViewById(R.id.transactionList);
         View addButton = view.findViewById(R.id.addTransactionBtn);
+        monthSelector = view.findViewById(R.id.monthSelector);
+
+        // Initialize selected month to current month
+        selectedMonth = Calendar.getInstance();
+        selectedMonth.set(Calendar.DAY_OF_MONTH, 1);
+        updateMonthSelectorText();
+
+        if (monthSelector != null) {
+            monthSelector.setOnClickListener(v -> showMonthPicker());
+        }
 
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -87,18 +107,87 @@ public class TransactionsFragment extends Fragment {
         addButton.setOnClickListener(v -> showAddTransactionDialog());
 
         buildCategoryChips(categoryChipContainer);
-        renderTransactions();
         loadData();
     }
 
     private void loadData() {
         categories.clear();
         categories.addAll(repository.getCategories());
-        sourceExpenses = repository.getExpenses();
+        
+        // Process recurring expenses for selected month
+        if (selectedMonth != null) {
+            repository.processRecurringExpensesForMonth(
+                    selectedMonth.get(Calendar.YEAR),
+                    selectedMonth.get(Calendar.MONTH)
+            );
+            // Load expenses for selected month
+            sourceExpenses = repository.getExpensesByMonth(
+                    selectedMonth.get(Calendar.YEAR),
+                    selectedMonth.get(Calendar.MONTH)
+            );
+        } else {
+            sourceExpenses = repository.getExpenses();
+        }
+        
         if (categoryChipContainer != null) {
             buildCategoryChips(categoryChipContainer);
         }
         renderTransactions();
+    }
+    
+    private void updateMonthSelectorText() {
+        if (monthSelector != null && selectedMonth != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
+            monthSelector.setText(sdf.format(selectedMonth.getTime()));
+        }
+    }
+    
+    private void showMonthPicker() {
+        if (selectedMonth == null) {
+            selectedMonth = Calendar.getInstance();
+        }
+        
+        // Create a simple dialog with month/year picker
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_month_picker, null);
+        Spinner monthSpinner = dialogView.findViewById(R.id.monthSpinner);
+        Spinner yearSpinner = dialogView.findViewById(R.id.yearSpinner);
+        
+        // Setup month spinner
+        String[] months = new String[]{"January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"};
+        ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, months);
+        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        monthSpinner.setAdapter(monthAdapter);
+        monthSpinner.setSelection(selectedMonth.get(Calendar.MONTH));
+        
+        // Setup year spinner (current year ± 5 years)
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        List<String> years = new ArrayList<>();
+        for (int i = currentYear - 5; i <= currentYear + 5; i++) {
+            years.add(String.valueOf(i));
+        }
+        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, years);
+        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        yearSpinner.setAdapter(yearAdapter);
+        int yearIndex = years.indexOf(String.valueOf(selectedMonth.get(Calendar.YEAR)));
+        if (yearIndex >= 0) {
+            yearSpinner.setSelection(yearIndex);
+        }
+        
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Select Month")
+                .setView(dialogView)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    int month = monthSpinner.getSelectedItemPosition();
+                    int year = Integer.parseInt(years.get(yearSpinner.getSelectedItemPosition()));
+                    selectedMonth.set(Calendar.YEAR, year);
+                    selectedMonth.set(Calendar.MONTH, month);
+                    selectedMonth.set(Calendar.DAY_OF_MONTH, 1);
+                    updateMonthSelectorText();
+                    loadData();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void buildCategoryChips(LinearLayout container) {
@@ -234,6 +323,7 @@ public class TransactionsFragment extends Fragment {
                     long categoryId = resolveCategoryId(categorySpinner.getSelectedItemPosition());
                     repository.addExpense(title, categoryId, amount, chosen.getTime());
                     Toast.makeText(requireContext(), "Transaction added", Toast.LENGTH_SHORT).show();
+                    // Refresh data to show new transaction
                     loadData();
                 })
                 .setNegativeButton("Cancel", null)
