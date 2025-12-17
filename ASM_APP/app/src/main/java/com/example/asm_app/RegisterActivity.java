@@ -61,6 +61,11 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
+        String passwordError = validatePassword(password);
+        if (passwordError != null) {
+            Toast.makeText(this, passwordError, Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (userRepository.emailExists(email)) {
             Toast.makeText(this, "Email already exists", Toast.LENGTH_SHORT).show();
             return;
@@ -74,6 +79,38 @@ public class RegisterActivity extends AppCompatActivity {
         ExpenseRepository expenseRepository = new ExpenseRepository(this, user.getId());
         expenseRepository.ensureDefaultCategoriesIfEmpty();
         openHome();
+    }
+
+    private String validatePassword(String password) {
+        if (password.length() < 6) {
+            return "Mật khẩu phải có tối thiểu 6 ký tự";
+        }
+        
+        boolean hasUpperCase = false;
+        boolean hasDigit = false;
+        boolean hasSpecialChar = false;
+        
+        for (char c : password.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                hasUpperCase = true;
+            } else if (Character.isDigit(c)) {
+                hasDigit = true;
+            } else if (!Character.isLetterOrDigit(c)) {
+                hasSpecialChar = true;
+            }
+        }
+        
+        if (!hasUpperCase) {
+            return "Mật khẩu phải chứa ít nhất 1 chữ hoa";
+        }
+        if (!hasDigit) {
+            return "Mật khẩu phải chứa ít nhất 1 số";
+        }
+        if (!hasSpecialChar) {
+            return "Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt";
+        }
+        
+        return null; // Password is valid
     }
 
     private void openHome() {
