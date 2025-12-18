@@ -128,6 +128,39 @@ public class RecurringFragment extends Fragment {
             category.setText(item.getCategory());
             amount.setText(FormatUtils.formatCurrency(item.getAmount()));
             date.setText("Starts " + FormatUtils.formatDate(item.getStartDate()));
+            
+            View editBtn = row.findViewById(R.id.editRecurringBtn);
+            View deleteBtn = row.findViewById(R.id.deleteRecurringBtn);
+
+            // Xử lý Xóa
+            deleteBtn.setOnClickListener(v -> {
+                new android.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Confirm Delete")
+                    .setMessage("Are you sure you want to delete this recurring expense?")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        if (repository.deleteRecurring(item.getId())) {
+                            Toast.makeText(requireContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                            renderRecurringList();
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            });
+
+            // Xử lý Sửa (Đổ dữ liệu lên form phía trên để sửa)
+            editBtn.setOnClickListener(v -> {
+                titleInput.setText(item.getTitle());
+                amountInput.setText(String.valueOf(item.getAmount()));
+                dateInput.setText(FormatUtils.formatDate(item.getStartDate()));
+                
+                // Thay đổi nút "Add" thành "Update"
+                Button mainBtn = getView().findViewById(R.id.addRecurringBtn);
+                mainBtn.setText("Update Expense");
+                mainBtn.setOnClickListener(v2 -> {
+                    // Gọi repository.updateRecurring(...) tương tự saveRecurring()
+                    // Sau đó set lại nút về mặc định
+                });
+            });
             recurringList.addView(row);
         }
     }
