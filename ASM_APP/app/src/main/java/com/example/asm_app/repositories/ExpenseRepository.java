@@ -654,4 +654,36 @@ public class ExpenseRepository {
             return new CategorySpend(id, name, color, limit, spent);
         }
     }
+    // Thêm vào trong class ExpenseRepository.java
+
+    public boolean deleteRecurring(long id) {
+        if (userId <= 0 || id <= 0) return false;
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // Xóa khoản định kỳ
+        int rows = db.delete("recurring_expenses", "id = ? AND userId = ?", 
+                new String[]{String.valueOf(id), String.valueOf(userId)});
+        
+        // Tùy chọn: Xóa các hóa đơn đã được tự động tạo từ khoản này nếu muốn
+        // db.delete("expenses", "recurringExpenseId = ?", new String[]{String.valueOf(id)});
+        
+        return rows > 0;
+    }
+
+    public boolean updateRecurring(long id, String title, double amount, long categoryId, Date startDate) {
+        if (userId <= 0 || id <= 0) return false;
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("title", title);
+        values.put("amount", amount);
+        if (categoryId > 0) {
+            values.put("categoryId", categoryId);
+        } else {
+            values.putNull("categoryId");
+        }
+        values.put("startDateMillis", startDate.getTime());
+        
+        int rows = db.update("recurring_expenses", values, "id = ? AND userId = ?", 
+                new String[]{String.valueOf(id), String.valueOf(userId)});
+        return rows > 0;
+    }
 }
